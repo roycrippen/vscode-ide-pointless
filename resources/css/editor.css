@@ -1,0 +1,215 @@
+body {
+    font-family: Sans-Serif;
+    background-color: #232323;
+    color: White;
+}
+
+span {
+    display: inline-block;
+    font-size: x-large;
+    font-weight: bold;
+    padding: 6px;
+    margin: 6px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+}
+
+.cursor 
+{
+    color: #ABACAA;
+    font-size: xx-large;
+    font-weight: bold;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.list {
+    background: #555;
+}
+
+.list .list 
+{
+    background: #999;
+}
+
+.list .list .list 
+{
+    background: #555;
+}
+
+.list .list .list .list 
+{
+    background: #999;
+}
+
+.list .list .list .list .list 
+{
+    background: #555;
+}
+
+.primitive
+{
+    background: #080;
+}
+
+.secondary
+{
+    background: #00F;
+}
+
+.number 
+{
+    background: #DDD;
+    color: #000;
+}
+
+.string 
+{
+    background: #FF0;
+    color: #000;
+}
+
+.boolean
+{
+    background: #F0F;
+}
+
+.unknown
+{
+    border-color: #F00;
+    background: #FFF;
+    color: #000;
+}
+
+.complete
+{
+    color: #888;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.selected
+{
+    background: #6199B9;
+    padding: 0px;
+    margin: 0px;
+    border: 0;
+}
+
+#output, #dictionary
+{
+    color: #DDD;
+}
+
+#context, #output, #error
+{
+    font-size: 24px;
+}
+
+#error
+{
+    color: red;
+}
+
+#context, #dictionary, #output, #error
+{
+    width: 100%;
+    overflow: scroll;
+    resize: vertical;
+}
+
+#context
+{
+    height: 6em;
+}
+
+#error, #dictionary
+{
+    height: 4em;
+}
+
+#output
+{
+    height: 2em;
+}
+
+.container {
+    display: flex; /* or inline-flex */
+    flex-direction: row;    
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.title-container {
+    width: 99%;
+    margin: 1em auto;
+    border: 1px solid #3C3C3C;
+    display: flex;
+    flex-direction: column;
+}
+
+.title-header {
+    font-size: 16px;    
+    background: #414147;    
+}
+
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+}
+
+#dropdown-search {
+    width: 40%;
+    background-size: 24px;    
+    box-sizing: border-box;
+    background-image: url('./ic_search_black_24dp_2x.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    margin-top: 45px;
+    background-color: #313133;
+    overflow: auto;
+    width: 40%;
+    height: 200px;
+    overflow: scroll;
+    resize: both;    
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #106298}
+
+.show {display:block;}
