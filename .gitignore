@@ -1,2 +1,4 @@
 out
+built
 node_modules
+./engine/node_modules

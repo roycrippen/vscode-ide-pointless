@@ -427,8 +427,6 @@ function kind(token) {
     }
 }
 function update() {
-    if ($("#dropdown-search").is(":focus"))
-        return;
     render(function () {
         if (token.length > 0) {
             return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
@@ -455,12 +453,8 @@ function update() {
         var s = ctx.Stack[i];
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
-    $("#error").empty();
-    $("#error").append("<div class='stack'/>").append(editor.joy.print([editor.joy.getErrors()]));
 }
 $(document).keydown(function (e) {
-    if ($("#dropdown-search").is(":focus"))
-        return;
     switch (e.which) {
         case 8:// Backspace
             e.preventDefault();
@@ -508,8 +502,6 @@ $(document).keydown(function (e) {
     update();
 });
 $(document).keypress(function (e) {
-    if ($("#dropdown-search").is(":focus"))
-        return;
     e.preventDefault();
     if (inQuote) {
         switch (e.which) {
@@ -10849,6 +10841,8 @@ return jQuery;
 Object.defineProperty(exports, "__esModule", { value: true });
 var lexer_1 = __webpack_require__(4);
 var tokens_1 = __webpack_require__(0);
+var primitives_1 = __webpack_require__(6);
+var joylibs_1 = __webpack_require__(7);
 var Joy = /** @class */ (function () {
     function Joy() {
         // error display functions
@@ -10996,7 +10990,8 @@ var Joy = /** @class */ (function () {
         this.context = { Stack: [] };
         this.defines = {};
         this.displayConsole = [];
-        initialJoyprimitives(this);
+        primitives_1.initialJoyprimitives(this);
+        joylibs_1.loadCoreLibries(this);
     }
     Joy.prototype.assertStack = function (length) {
         if (this.context.Stack.length < length) {
@@ -11130,10 +11125,12 @@ var Joy = /** @class */ (function () {
                     if (a.kind === 'list') {
                         output += "[ " + this.print(a) + "] ";
                     }
-                    else if (a.disp)
+                    else if (a.disp) {
                         output += a.disp + " ";
-                    else
+                    }
+                    else {
                         output += a + " ";
+                    }
                 }
                 return output;
             default:
@@ -11198,402 +11195,6 @@ var Joy = /** @class */ (function () {
     return Joy;
 }()); // Joy
 exports.Joy = Joy;
-function initialJoyprimitives(j) {
-    // language
-    j.primitive('define', function (quote, name) { j.define(quote, name); });
-    // stack
-    j.primitive('pop', function () { j.popStack(); });
-    j.primitive('.', function (x) { j.pushResult(j.print(x)); });
-    j.primitive('dup', function (x) {
-        var ret = [x, x];
-        ret.kind = 'tuple';
-        return ret;
-    });
-    j.primitive('swap', function (y, x) {
-        var ret = [x, y];
-        ret.kind = 'tuple';
-        return ret;
-    });
-    // stdout/stdin
-    j.primitive('putchars', function (x) {
-        if (typeof x !== 'string') {
-            j.pushError('string needed for putchars');
-            return;
-        }
-        j.concatDisplayConsole(j.print(x));
-    });
-    // combinators
-    j.primitive('dip', function (x, q) {
-        j.run(q);
-        j.pushStack(x);
-    });
-    // arithmetic
-    j.primitive('+', function (y, x) {
-        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
-            return String.fromCharCode(y.charCodeAt(0) + x);
-        }
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '+' must be numbers");
-            return 0;
-        }
-        return y + x;
-    });
-    j.primitive('-', function (y, x) {
-        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
-            return String.fromCharCode(y.charCodeAt(0) - x);
-        }
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '-' must be numbers");
-            return 0;
-        }
-        return y - x;
-    });
-    j.primitive('*', function (y, x) {
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '*' must be numbers");
-            return 0;
-        }
-        return y * x;
-    });
-    j.primitive('/', function (y, x) {
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '/' must be numbers");
-            return 0;
-        }
-        if (x === 0) {
-            j.pushError("divisor for '/' must not be 0");
-            return 0;
-        }
-        return y / x;
-    });
-    j.primitive('rem', function (y, x) {
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for 'rem' must be numbers");
-            return;
-        }
-        j.pushStack(y % x);
-    });
-    // comparison
-    j.primitive('=', function (y, x) {
-        j.pushStack(y === x);
-    });
-    j.primitive('<', function (y, x) {
-        j.pushStack(y < x);
-    });
-    j.primitive('>', function (y, x) {
-        j.pushStack(y > x);
-    });
-    j.primitive('<=', function (y, x) {
-        j.pushStack(y <= x);
-    });
-    j.primitive('>=', function (y, x) {
-        j.pushStack(y >= x);
-    });
-    // boolean/conditional
-    j.primitive('true', function (x) {
-        j.pushStack(true);
-    });
-    j.primitive('false', function (x) {
-        j.pushStack(false);
-    });
-    j.primitive('not', function (x) {
-        j.pushStack(!x);
-    });
-    j.primitive('and', function (y, x) {
-        j.pushStack(y && x);
-    });
-    j.primitive('or', function (y, x) {
-        j.pushStack(y || x);
-    });
-    j.primitive('xor', function (y, x) {
-        j.pushStack((y || x) && !(y && x));
-    });
-    j.primitive('ifte', function (x, p, q) {
-        j.run(x);
-        var predicate = j.popStack();
-        if (typeof predicate !== 'boolean') {
-            j.pushError('predicate quotation does not evalute to a boolean');
-            return;
-        }
-        j.run(predicate ? p : q);
-    });
-    j.primitive('iflist', function (x) {
-        j.pushStack(typeof x === 'object' && x.kind === 'list');
-    });
-    j.primitive('ifinteger', function (x) {
-        j.pushStack(typeof x === 'number' && x % 1 === 0);
-    });
-    j.primitive('iffloat', function (x) {
-        j.pushStack(typeof x === 'number' && x % 1 !== 0);
-    });
-    j.primitive('ifstring', function (x) {
-        j.pushStack(typeof x === 'string');
-    });
-    // lists
-    j.primitive('size', function (x) { return x.length; });
-    j.primitive('cons', function (x, xs) {
-        if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
-            return x + xs;
-        }
-        if (typeof x === 'object' || !(typeof xs === 'object' && xs.kind === 'list')) {
-            j.pushError("arguments for 'cons' must be a literal followed by a list/quotation");
-            return xs;
-        }
-        xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
-        return xs;
-    });
-    j.primitive('snoc', function (xs) {
-        if (typeof xs === 'string' && xs.length > 0) {
-            j.pushStack(xs[0]);
-            return xs.slice(1);
-        }
-        if (!(typeof xs === 'object' && xs.kind === 'list')) {
-            j.pushError("argument for 'snoc' must be a non-empty list/quotation/string");
-            return xs;
-        }
-        var x = xs.shift();
-        j.pushStack(x.val);
-        return xs;
-    });
-    j.primitive('concat', function (xs, ys) {
-        if (typeof xs !== typeof ys) {
-            j.pushError("arguments for 'conat' must be the same type");
-            return xs;
-        }
-        if (typeof xs === 'string' && typeof ys === 'string') {
-            return xs.concat(ys);
-        }
-        if (xs.kind !== 'list' || ys.kind !== 'list') {
-            j.pushError("arguments for 'conat' must be a lists and/or quatations");
-            return xs;
-        }
-        for (var i = 0; i < ys.length; i += 1) {
-            xs.push(ys[i]);
-        }
-        return xs;
-    });
-    j.primitive('aaa', function () {
-        // /*
-        // const source = "\"(* Sample application for editor *)\n\n\\\"(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \\\"aaa \\\\\"bbb\\\\\" ccc\\\";\n    test2 == \\\"aaa  (* ccc *) ##\\\";\n\n    SAMPLELIB == \\\"samplelib.joy - simple sample library\\n\\\".\n\n(* end LIBRA *)\n\n\\\"samplelib is loaded\\n\\\" putchars.\n\"\n\n(* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n\"";
-        var source = "(* Sample application for editor *)\n\n\\(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \\\"aaa \\\\\"bbb\\\\\" ccc\\\";\n    test2 == \\\"aaa  (* ccc *) ##\\\";\n\n    SAMPLELIB == \\\"samplelib.joy - simple sample library\\n\\\".\n\n(* end LIBRA *)\n\n\\\"samplelib is loaded\\n\\\" putchars.\n\n\n(* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n";
-        // */
-        j.processJoySource(source);
-    });
-    j.primitive('range', function (y, x) {
-        var r = [];
-        r.kind = 'list';
-        for (var i = x; i <= y; i += 1) {
-            r.push({ kind: 'literal', disp: i.toString(), val: i });
-        }
-        j.pushStack(r);
-    });
-    j.primitive('map', function (xs, q) {
-        var ys = '';
-        var xsCopy = xs;
-        switch (typeof xs) {
-            case 'string':
-                for (var i = 0; i < xs.length; i += 1) {
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    var v = j.popStack();
-                    ys += v;
-                }
-                j.pushStack(ys);
-                break;
-            case 'object':
-                if (xs.kind === 'list') {
-                    for (var i = 0; i < xs.length; i += 1) {
-                        j.pushStack(xsCopy[i].val);
-                        j.run(q);
-                        var v = j.popStack();
-                        xsCopy[i].val = v;
-                        xsCopy[i].disp = v.toString();
-                    }
-                    j.pushStack(xs);
-                }
-                break;
-            default:
-                j.pushError("first argument of 'map' must be a string or list/quotation");
-        }
-    });
-    j.primitive('filter', function (xs, q) {
-        var ys = '';
-        switch (typeof xs) {
-            case 'string':
-                for (var i = 0; i < xs.length; i += 1) {
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    if (j.popStack())
-                        ys += xs[i];
-                }
-                j.pushStack(ys);
-                break;
-            case 'object':
-                if (xs.kind === 'list') {
-                    var f = [];
-                    f.kind = 'list';
-                    for (var i = 0; i < xs.length; i += 1) {
-                        var x = xs[i];
-                        j.pushStack(x.val);
-                        j.run(q);
-                        if (j.popStack())
-                            f.push(x);
-                    }
-                    j.pushStack(f);
-                }
-                break;
-            default:
-                j.pushError("first argument of 'filter' must be a string or list/quotation");
-        }
-    });
-    j.primitive('fold', function (xs, b, q) {
-        var a = b;
-        switch (typeof xs) {
-            case 'string':
-                for (var i = 0; i < xs.length; i += 1) {
-                    j.pushStack(a);
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    a = j.popStack();
-                }
-                j.pushStack(a);
-                break;
-            case 'object':
-                if (xs.kind === 'list') {
-                    for (var i = 0; i < xs.length; i += 1) {
-                        j.pushStack(a);
-                        j.pushStack(xs[i].val);
-                        j.run(q);
-                        a = j.popStack();
-                    }
-                    j.pushStack(a);
-                }
-                break;
-            default:
-                j.pushError("first argument of 'fold' must be a string or list/quotation");
-        }
-    });
-    j.primitive('words', function () {
-        var words = [];
-        words.kind = 'list';
-        j.words().forEach(function (key) {
-            var func = j.word(key);
-            if (func.kind === 'primitive') {
-                words.push(func);
-            }
-        });
-        words.sort(function (a, b) {
-            if (a.disp > b.disp)
-                return 1;
-            if (a.disp < b.disp)
-                return -1;
-            return 0;
-        });
-        return words;
-    });
-    j.primitive('defines', function () {
-        var xs = [];
-        xs.kind = 'list';
-        j.words().forEach(function (key) {
-            var func = j.word(key);
-            if (func.kind === 'secondary') {
-                xs.push(func);
-            }
-        });
-        xs.sort(function (a, b) {
-            if (a.disp > b.disp)
-                return 1;
-            if (a.disp < b.disp)
-                return -1;
-            return 0;
-        });
-        return xs;
-    });
-    /* eliminated
-    j.execute('[ [ 2dip ] 2dip [ dip ] dip apply ]    "tri*"      define');
-    j.execute('[ [ 2dip ] dip apply ]                 "2cleave*"  define');
-    j.execute('[ [ 2dup ] dip 2dip ]                  "2keep"     define');
-    j.execute('[ [ 2keep ] 2dip [ 2keep ] dip apply ] "2tri"      define');
-    j.execute('[ [ 2keep ] dip apply ]                "2cleave"   define');
-    j.execute('[ [ 3dup ] dip 3dip ]                  "3keep"     define');
-    j.execute('[ [ 3keep ] 2dip [ 3keep ] dip apply ] "3tri"      define');
-    j.execute('[ [ 3keep ] dip apply ]                "3cleave"   define');
-    j.execute('[ [ 4dip ] 2dip [ 2dip ] dip apply ]   "2tri*"     define');
-    j.execute('[ [ dip ] dip apply ]                  "cleave*"   define');
-    j.execute('[ [ dup ] dip swap ]                   "over"      define');
-    j.execute('[ [ keep ] 2dip [ keep ] dip apply ]   "tri"       define');
-    j.execute('[ [ over ] dip swap ]                  "pick"      define');
-    j.execute('[ [ pop2 ] dip ]                       "2nip"      define');
-    j.execute('[ [ sum ] [ size ] cleave / ]          "average"   define');
-    j.execute('[ 0 [ + ] fold ]                       "sum"       define');
-    j.execute('[ 1 [ * ] fold ]                       "prod"      define');
-    j.execute('[ 1 range prod ]                       "factorial" define');
-    j.execute('[ cleave@ and ]                        "both?"     define');
-    j.execute('[ cleave@ or ]                         "either?"   define');
-    j.execute('[ dup * ]                              "square"    define');
-    j.execute('[ dup 2dip apply ]                     "cleave@"   define');
-    j.execute('[ dup 3dip apply ]                     "2cleave@"  define');
-    j.execute('[ dup 3dip dup 2dip apply ]            "tri@"      define');
-    j.execute('[ dup 4dip apply ]                     "2tri@"     define');
-    j.execute('[ over over ]                          "2dup"      define');
-    j.execute('[ pick pick pick ]                     "3dup"      define');
-    j.execute('[ swap [ 2dip ] dip ]                  "3dip"      define');
-    j.execute('[ swap [ 3dip ] dip ]                  "4dip"      define');
-    j.execute('[ swap [ dip ] dip ]                   "2dip"      define');
-    j.execute('[ swap pop ]                           "nip"       define');
-    */
-    // core
-    j.execute('[ [ ] ifte ]                           "when"      define');
-    j.execute('[ [ ] swap ifte ]                      "unless"    define');
-    j.execute('[ [ dup ] dip ]                        "dupd"      define');
-    j.execute('[ [ keep ] dip apply ]                 "cleave"    define'); // from bi to cleave
-    j.execute('[ [ swap ] dip ]                       "swapd"     define');
-    j.execute('[ [ true ] swap when ]                 "apply"     define');
-    j.execute('[ 0 swap - ]                           "neg"       define');
-    j.execute('[ dup 0 < [ neg ] when ]               "abs"       define');
-    j.execute('[ dupd dip ]                           "keep"      define');
-    j.execute('[ pop pop ]                            "pop2"      define');
-    j.execute('[ pop pop pop ]                        "pop3"      define');
-    j.execute('[ rolldown rolldown ]                  "rollup"    define'); // from -rot to rollup
-    j.execute('[ swapd swap ]                         "rolldown"  define'); // from rot to rolldown
-    // added for joy compatibility
-    j.execute('[ swap cons ]                          "swons"     define');
-    j.execute('[ [pop] dip ]                          "popd"      define');
-    j.execute('[ snoc pop ]                           "first"     define');
-    j.execute('[ snoc swap pop ]                      "rest"      define');
-    // added for Brief to Joy testing
-    j.execute('[ true ]      "test"             define');
-    j.execute('[ [ dup "a" >= ] [ 32 - ] [ ] ifte ]      "to-upper"             define');
-    j.execute('[ [ dup "a" < ]  [ 32 + ] [ ] ifte ]      "to-lower"             define');
-    // j.execute('[ 0 [ + ] fold ]                          "new-sum"              define');
-    // j.execute('[ 1 [ * ] fold ]                          "new-prod"             define');
-    // j.execute('[ dup * ]                                 "square"               define');
-    // j.execute('[ quad == square square ]                 "quad"                 define');
-    // j.execute('[ [ quad ] map ]                          "quad-list"            define');
-    // j.execute('[ quad-list dup new-prod swap new-sum - ] "quad-prod-sum-diff"    define');
-    j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define');
-    // utility function
-    function is2Numbers(x, y) {
-        return typeof x === 'number' && typeof y === 'number';
-    }
-    function contentProviderCallback() {
-        console.debug('executing content provider callback');
-        //Note: getJoyFileString is a script function within the vscode content provider 
-        return getJoyFileString();
-    }
-    $(document).ready(function () {
-        console.debug('document ready');
-        var joyStr = contentProviderCallback();
-        j.processJoySource(joyStr);
-        $("#dropdown-search").empty();
-        var defs = j.getDefines();
-        console.debug('populating dictionary dropdown');
-        for (var _i = 0, _a = Object.entries(defs); _i < _a.length; _i++) {
-            var _b = _a[_i], k = _b[0], v = _b[1];
-            $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + k + "\">" + k + " == " + v + "</a>");
-        }
-    });
-}
 
 
 /***/ }),
@@ -11893,6 +11494,391 @@ function cmp(x, y) {
         return 0;
 }
 exports.cmp = cmp;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+// load joy primitives into and instance of the engine
+function initialJoyprimitives(j) {
+    // used for testing new code
+    j.primitive('aaa', function () {
+        // const source = "\"(* Sample application for editor *)\n\n\\\"(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \\\"aaa \\\\\"bbb\\\\\" ccc\\\";\n    test2 == \\\"aaa  (* ccc *) ##\\\";\n\n    SAMPLELIB == \\\"samplelib.joy - simple sample library\\n\\\".\n\n(* end LIBRA *)\n\n\\\"samplelib is loaded\\n\\\" putchars.\n\"\n\n(* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n\"";
+        var source = "(* Sample application for editor *)\n\n (* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n \n\n (* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n";
+        // const source = ' \" a \\"b\\" c \" ';
+        j.processJoySource(source);
+    });
+    // language
+    j.primitive('define', function (quote, name) { j.define(quote, name); });
+    // stack
+    j.primitive('pop', function () { j.popStack(); });
+    j.primitive('.', function (x) {
+        var output = j.print(x);
+        if (typeof (x) === "object" && x.kind === 'list') {
+            output = "[ " + output + "]";
+        }
+        j.pushResult(output);
+    });
+    j.primitive('dup', function (x) {
+        var ret = [x, x];
+        ret.kind = 'tuple';
+        return ret;
+    });
+    j.primitive('swap', function (y, x) {
+        var ret = [x, y];
+        ret.kind = 'tuple';
+        return ret;
+    });
+    // stdout/stdin
+    j.primitive('putchars', function (x) {
+        if (typeof x !== 'string') {
+            j.pushError('string needed for putchars');
+            return;
+        }
+        j.concatDisplayConsole(j.print(x));
+    });
+    // combinators
+    j.primitive('dip', function (x, q) {
+        j.run(q);
+        j.pushStack(x);
+    });
+    // arithmetic
+    j.primitive('+', function (y, x) {
+        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
+            return String.fromCharCode(y.charCodeAt(0) + x);
+        }
+        if (!is2Numbers(x, y)) {
+            j.pushError("opperands for '+' must be numbers");
+            return 0;
+        }
+        return y + x;
+    });
+    j.primitive('-', function (y, x) {
+        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
+            return String.fromCharCode(y.charCodeAt(0) - x);
+        }
+        if (!is2Numbers(x, y)) {
+            j.pushError("opperands for '-' must be numbers");
+            return 0;
+        }
+        return y - x;
+    });
+    j.primitive('*', function (y, x) {
+        if (!is2Numbers(x, y)) {
+            j.pushError("opperands for '*' must be numbers");
+            return 0;
+        }
+        return y * x;
+    });
+    j.primitive('/', function (y, x) {
+        if (!is2Numbers(x, y)) {
+            j.pushError("opperands for '/' must be numbers");
+            return 0;
+        }
+        if (x === 0) {
+            j.pushError("divisor for '/' must not be 0");
+            return 0;
+        }
+        return y / x;
+    });
+    j.primitive('rem', function (y, x) {
+        if (!is2Numbers(x, y)) {
+            j.pushError("opperands for 'rem' must be numbers");
+            return;
+        }
+        j.pushStack(y % x);
+    });
+    // comparison
+    j.primitive('=', function (y, x) { j.pushStack(y === x); });
+    j.primitive('<', function (y, x) { j.pushStack(y < x); });
+    j.primitive('>', function (y, x) { j.pushStack(y > x); });
+    j.primitive('<=', function (y, x) { j.pushStack(y <= x); });
+    j.primitive('>=', function (y, x) { j.pushStack(y >= x); });
+    // boolean/conditional
+    j.primitive('true', function (x) { j.pushStack(true); });
+    j.primitive('false', function (x) { j.pushStack(false); });
+    j.primitive('not', function (x) { j.pushStack(!x); });
+    j.primitive('and', function (y, x) { j.pushStack(y && x); });
+    j.primitive('or', function (y, x) { j.pushStack(y || x); });
+    j.primitive('xor', function (y, x) { j.pushStack((y || x) && !(y && x)); });
+    j.primitive('iflist', function (x) { j.pushStack(typeof x === 'object' && x.kind === 'list'); });
+    j.primitive('ifinteger', function (x) { j.pushStack(typeof x === 'number' && x % 1 === 0); });
+    j.primitive('iffloat', function (x) { j.pushStack(typeof x === 'number' && x % 1 !== 0); });
+    j.primitive('ifstring', function (x) { j.pushStack(typeof x === 'string'); });
+    j.primitive('ifte', function (x, p, q) {
+        j.run(x);
+        var predicate = j.popStack();
+        j.run(predicate ? p : q);
+    });
+    // lists
+    j.primitive('size', function (x) { return x.length; });
+    j.primitive('cons', function (x, xs) {
+        if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
+            return x + xs;
+        }
+        if (typeof x === 'object' || !(typeof xs === 'object' && xs.kind === 'list')) {
+            j.pushError("arguments for 'cons' must be a literal followed by a list/quotation");
+            return xs;
+        }
+        xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+        return xs;
+    });
+    j.primitive('snoc', function (xs) {
+        if (typeof xs === 'string' && xs.length > 0) {
+            j.pushStack(xs[0]);
+            return xs.slice(1);
+        }
+        if (!(typeof xs === 'object' && xs.kind === 'list')) {
+            j.pushError("argument for 'snoc' must be a non-empty list/quotation/string");
+            return xs;
+        }
+        var x = xs.shift();
+        j.pushStack(x.val);
+        return xs;
+    });
+    j.primitive('concat', function (xs, ys) {
+        if (typeof xs !== typeof ys) {
+            j.pushError("arguments for 'conat' must be the same type");
+            return xs;
+        }
+        if (typeof xs === 'string' && typeof ys === 'string') {
+            return xs.concat(ys);
+        }
+        if (xs.kind !== 'list' || ys.kind !== 'list') {
+            j.pushError("arguments for 'conat' must be a lists and/or quatations");
+            return xs;
+        }
+        for (var i = 0; i < ys.length; i += 1) {
+            xs.push(ys[i]);
+        }
+        return xs;
+    });
+    j.primitive('range', function (y, x) {
+        var r = [];
+        r.kind = 'list';
+        for (var i = x; i <= y; i += 1) {
+            r.push({ kind: 'literal', disp: i.toString(), val: i });
+        }
+        j.pushStack(r);
+    });
+    j.primitive('map', function (xs, q) {
+        var ys = '';
+        var xsCopy = xs;
+        switch (typeof xs) {
+            case 'string':
+                for (var i = 0; i < xs.length; i += 1) {
+                    j.pushStack(xs[i]);
+                    j.run(q);
+                    var v = j.popStack();
+                    ys += v;
+                }
+                j.pushStack(ys);
+                break;
+            case 'object':
+                if (xs.kind === 'list') {
+                    for (var i = 0; i < xs.length; i += 1) {
+                        j.pushStack(xsCopy[i].val);
+                        j.run(q);
+                        var v = j.popStack();
+                        xsCopy[i].val = v;
+                        xsCopy[i].disp = v.toString();
+                    }
+                    j.pushStack(xs);
+                }
+                break;
+            default:
+                j.pushError("first argument of 'map' must be a string or list/quotation");
+        }
+    });
+    j.primitive('filter', function (xs, q) {
+        var ys = '';
+        switch (typeof xs) {
+            case 'string':
+                for (var i = 0; i < xs.length; i += 1) {
+                    j.pushStack(xs[i]);
+                    j.run(q);
+                    if (j.popStack())
+                        ys += xs[i];
+                }
+                j.pushStack(ys);
+                break;
+            case 'object':
+                if (xs.kind === 'list') {
+                    var f = [];
+                    f.kind = 'list';
+                    for (var i = 0; i < xs.length; i += 1) {
+                        var x = xs[i];
+                        j.pushStack(x.val);
+                        j.run(q);
+                        if (j.popStack())
+                            f.push(x);
+                    }
+                    j.pushStack(f);
+                }
+                break;
+            default:
+                j.pushError("first argument of 'filter' must be a string or list/quotation");
+        }
+    });
+    j.primitive('fold', function (xs, b, q) {
+        var a = b;
+        switch (typeof xs) {
+            case 'string':
+                for (var i = 0; i < xs.length; i += 1) {
+                    j.pushStack(a);
+                    j.pushStack(xs[i]);
+                    j.run(q);
+                    a = j.popStack();
+                }
+                j.pushStack(a);
+                break;
+            case 'object':
+                if (xs.kind === 'list') {
+                    for (var i = 0; i < xs.length; i += 1) {
+                        j.pushStack(a);
+                        j.pushStack(xs[i].val);
+                        j.run(q);
+                        a = j.popStack();
+                    }
+                    j.pushStack(a);
+                }
+                break;
+            default:
+                j.pushError("first argument of 'fold' must be a string or list/quotation");
+        }
+    });
+    j.primitive('words', function () {
+        var words = [];
+        words.kind = 'list';
+        j.words().forEach(function (key) {
+            var func = j.word(key);
+            if (func.kind === 'primitive') {
+                words.push(func);
+            }
+        });
+        words.sort(function (a, b) {
+            if (a.disp > b.disp)
+                return 1;
+            if (a.disp < b.disp)
+                return -1;
+            return 0;
+        });
+        return words;
+    });
+    j.primitive('defines', function () {
+        var xs = [];
+        xs.kind = 'list';
+        j.words().forEach(function (key) {
+            var func = j.word(key);
+            if (func.kind === 'secondary') {
+                xs.push(func);
+            }
+        });
+        xs.sort(function (a, b) {
+            if (a.disp > b.disp)
+                return 1;
+            if (a.disp < b.disp)
+                return -1;
+            return 0;
+        });
+        return xs;
+    });
+    // utility function
+    function is2Numbers(x, y) {
+        return typeof x === 'number' && typeof y === 'number';
+    }
+} // initialJoyprimitives
+exports.initialJoyprimitives = initialJoyprimitives;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+// load joy primitives into and instance of the engine
+function loadCoreLibries(j) {
+    // core
+    j.execute('[ [ ] ifte ]                           "when"      define');
+    j.execute('[ [ ] swap ifte ]                      "unless"    define');
+    j.execute('[ [ dup ] dip ]                        "dupd"      define');
+    j.execute('[ [ keep ] dip apply ]                 "cleave"    define');
+    j.execute('[ [ swap ] dip ]                       "swapd"     define');
+    j.execute('[ [ true ] swap when ]                 "apply"     define');
+    j.execute('[ 0 swap - ]                           "neg"       define');
+    j.execute('[ dup 0 < [ neg ] when ]               "abs"       define');
+    j.execute('[ dupd dip ]                           "keep"      define');
+    j.execute('[ pop pop ]                            "pop2"      define');
+    j.execute('[ pop pop pop ]                        "pop3"      define');
+    j.execute('[ rolldown rolldown ]                  "rollup"    define');
+    j.execute('[ swapd swap ]                         "rolldown"  define');
+    // added for joy compatibility
+    j.execute('[ swap cons ]                          "swons"     define');
+    j.execute('[ [pop] dip ]                          "popd"      define');
+    j.execute('[ snoc pop ]                           "first"     define');
+    j.execute('[ snoc swap pop ]                      "rest"      define');
+    // from joy proper libraries, added for testing
+    j.execute('[ [ dup "a" >= ] [ 32 - ] [ ] ifte ]      "to-upper"             define');
+    j.execute('[ [ dup "a" < ]  [ 32 + ] [ ] ifte ]      "to-lower"             define');
+    j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define');
+    /* eliminated
+      j.execute('[ [ 2dip ] 2dip [ dip ] dip apply ]    "tri*"      define');
+      j.execute('[ [ 2dip ] dip apply ]                 "2cleave*"  define');
+      j.execute('[ [ 2dup ] dip 2dip ]                  "2keep"     define');
+      j.execute('[ [ 2keep ] 2dip [ 2keep ] dip apply ] "2tri"      define');
+      j.execute('[ [ 2keep ] dip apply ]                "2cleave"   define');
+      j.execute('[ [ 3dup ] dip 3dip ]                  "3keep"     define');
+      j.execute('[ [ 3keep ] 2dip [ 3keep ] dip apply ] "3tri"      define');
+      j.execute('[ [ 3keep ] dip apply ]                "3cleave"   define');
+      j.execute('[ [ 4dip ] 2dip [ 2dip ] dip apply ]   "2tri*"     define');
+      j.execute('[ [ dip ] dip apply ]                  "cleave*"   define');
+      j.execute('[ [ dup ] dip swap ]                   "over"      define');
+      j.execute('[ [ keep ] 2dip [ keep ] dip apply ]   "tri"       define');
+      j.execute('[ [ over ] dip swap ]                  "pick"      define');
+      j.execute('[ [ pop2 ] dip ]                       "2nip"      define');
+      j.execute('[ [ sum ] [ size ] cleave / ]          "average"   define');
+      j.execute('[ 0 [ + ] fold ]                       "sum"       define');
+      j.execute('[ 1 [ * ] fold ]                       "prod"      define');
+      j.execute('[ 1 range prod ]                       "factorial" define');
+      j.execute('[ cleave@ and ]                        "both?"     define');
+      j.execute('[ cleave@ or ]                         "either?"   define');
+      j.execute('[ dup * ]                              "square"    define');
+      j.execute('[ dup 2dip apply ]                     "cleave@"   define');
+      j.execute('[ dup 3dip apply ]                     "2cleave@"  define');
+      j.execute('[ dup 3dip dup 2dip apply ]            "tri@"      define');
+      j.execute('[ dup 4dip apply ]                     "2tri@"     define');
+      j.execute('[ over over ]                          "2dup"      define');
+      j.execute('[ pick pick pick ]                     "3dup"      define');
+      j.execute('[ swap [ 2dip ] dip ]                  "3dip"      define');
+      j.execute('[ swap [ 3dip ] dip ]                  "4dip"      define');
+      j.execute('[ swap [ dip ] dip ]                   "2dip"      define');
+      j.execute('[ swap pop ]                           "nip"       define');
+      */
+    $(document).ready(function () {
+        console.debug('document ready');
+        var joyStr = contentProviderCallback();
+        j.processJoySource(joyStr);
+        $("#dropdown-search").empty();
+        var defs = j.getDefines();
+        console.debug('populating dictionary dropdown');
+        for (var _i = 0, _a = Object.entries(defs); _i < _a.length; _i++) {
+            var _b = _a[_i], k = _b[0], v = _b[1];
+            $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + k + "\">" + k + " == " + v + "</a>");
+        }
+    });
+} // loadCoreLibries
+exports.loadCoreLibries = loadCoreLibries;
+function contentProviderCallback() {
+    console.debug('executing content provider callback');
+    //Note: getJoyFileString is a script function within the vscode content provider 
+    return getJoyFileString();
+}
 
 
 /***/ })
