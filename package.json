@@ -61,10 +61,10 @@
         "@types/jsdom": "^11.0.2",
         "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.40",
+        "@types/jquery": "^3.2.12",
         "mocha": "^2.3.3",
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
-        "@types/jquery": "^3.2.12",
         "jquery": "^3.2.1",
         "ts-loader": "^2.3.7",
         "webpack": "^3.6.0"
