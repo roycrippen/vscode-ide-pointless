@@ -4,10 +4,13 @@
 * `git clone` ...
 * `cd vscode-joy-editor`
 * `yarn` or `npm install`
-* open VS Code, open a joy file in the active editor
+* `cd engine`
+* `../node_modules/webpack/bin/webpack.js`
+* `cd ..`
 
 ## Get up and running straight away
 * press `F5` to run in debug mode
+* open a .joy source file
 * press `Ctrl+Shift+P` or `Cmd+Shift+P` on Mac to toggle the command dropdown,  type `Joy Editor`, and select `Joy Editor: Launch the Editor`
 
 ## References
