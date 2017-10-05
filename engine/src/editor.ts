@@ -372,7 +372,7 @@ function update() {
 
 $(document).keydown(function (e) {
     if ($("#dropdown-search").is(":focus")) return;
-    
+
     switch (e.which) {
         case 8: // Backspace
             e.preventDefault();
@@ -420,7 +420,7 @@ $(document).keydown(function (e) {
 
 $(document).keypress(function (e) {
     if ($("#dropdown-search").is(":focus")) return;
-    
+
     e.preventDefault();
     if (inQuote) {
         switch (e.which) {

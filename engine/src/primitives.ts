@@ -1,7 +1,7 @@
 import { Joy } from "./engine"
 
 // load joy primitives into and instance of the engine
-export function initialJoyprimitives(j: Joy) {
+export function loadJoyprimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {

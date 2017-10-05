@@ -10998,8 +10998,8 @@ var Joy = /** @class */ (function () {
         this.context = { Stack: [] };
         this.defines = {};
         this.displayConsole = [];
-        primitives_1.initialJoyprimitives(this);
-        joylibs_1.loadCoreLibries(this);
+        primitives_1.loadJoyprimitives(this);
+        joylibs_1.loadCoreLibrary(this);
     }
     Joy.prototype.assertStack = function (length) {
         if (this.context.Stack.length < length) {
@@ -11512,7 +11512,7 @@ exports.cmp = cmp;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 // load joy primitives into and instance of the engine
-function initialJoyprimitives(j) {
+function loadJoyprimitives(j) {
     // used for testing new code
     j.primitive('aaa', function () {
         // const source = ' \" a \\"b\\" c \" ';
@@ -11799,7 +11799,7 @@ function initialJoyprimitives(j) {
         return typeof x === 'number' && typeof y === 'number';
     }
 } // initialJoyprimitives
-exports.initialJoyprimitives = initialJoyprimitives;
+exports.loadJoyprimitives = loadJoyprimitives;
 
 
 /***/ }),
@@ -11810,7 +11810,7 @@ exports.initialJoyprimitives = initialJoyprimitives;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 // load joy primitives into and instance of the engine
-function loadCoreLibries(j) {
+function loadCoreLibrary(j) {
     // core
     j.execute('[ [ ] ifte ]                           "when"      define');
     j.execute('[ [ ] swap ifte ]                      "unless"    define');
@@ -11880,7 +11880,7 @@ function loadCoreLibries(j) {
         }
     });
 } // loadCoreLibries
-exports.loadCoreLibries = loadCoreLibries;
+exports.loadCoreLibrary = loadCoreLibrary;
 var getJoyFileString;
 function contentProviderCallback() {
     console.debug('executing content provider callback');

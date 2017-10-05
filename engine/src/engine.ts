@@ -2,8 +2,8 @@
 
 import { Lexer } from "./lexer"
 import { Token, tokToStr } from "./tokens"
-import { initialJoyprimitives } from "./primitives"
-import { loadCoreLibries } from "./joylibs"
+import { loadJoyprimitives } from "./primitives"
+import { loadCoreLibrary } from "./joylibs"
 
 export class Joy {
 
@@ -22,8 +22,8 @@ export class Joy {
         this.context = { Stack: [] }
         this.defines = {}
         this.displayConsole = []
-        initialJoyprimitives(this)
-        loadCoreLibries(this)
+        loadJoyprimitives(this)
+        loadCoreLibrary(this)
     }
 
     public assertStack(length: number) {
@@ -350,8 +350,6 @@ export class Joy {
 
         source.split(';').map(x => joyDefine(x.trim(), this));
     }
-
-
 
     public processJoySource = function (source: string) {
 

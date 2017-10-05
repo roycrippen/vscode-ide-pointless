@@ -1,74 +1,75 @@
 {
-  "name": "vscode-joy-editor",
-  "displayName": "Joy Editor",
-  "description": "vscode joy editor extension",
-  "icon": "logo/128x128.png",
-  "version": "0.0.9",
-  "publisher": "anthonytamez",
-  "author": {
-    "name": "Anthony Tamez",
-    "email": "anthony.tamez@archarithms.com"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/roycrippen/vscode-joy-editor",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/roycrippen/vscode-joy-editor"
-  },
-  "keywords": [
-    "joy",
-    "concatenative",
-    "forth",
-    "language",
-    "programming"
-  ],
-  "bugs": {
-    "url": "https://github.com/roycrippen/vscode-joy-editorr"
-  },
-  "galleryBanner": {
-    "color": "#35364E",
-    "theme": "dark"
-  },
-  "engines": {
-    "vscode": "^1.10.0"
-  },
-  "categories": [
-    "Debuggers"
-  ],
-  "activationEvents": [
-    "onCommand:extension.openJoyEditor"
-  ],
-  "main": "./out/src/extension",
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension.openJoyEditor",
-        "title": "Joy Editor: Launch the editor"
-      },
-      {
-        "command": "extension.reloadJoyEditor",
-        "title": "Joy Editor: Reload the editor from the context of the current .joy file"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "@types/jsdom": "^11.0.2",
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
-    "mocha": "^2.3.3",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "@types/jquery": "^3.2.12",
-    "ts-loader": "^2.3.7",
-    "webpack": "^3.6.0"
-  },
-  "dependencies": {
-    "jquery": "^3.2.1"
-  }
+    "name": "vscode-joy-editor",
+    "displayName": "Joy Editor",
+    "description": "vscode joy editor extension",
+    "icon": "logo/128x128.png",
+    "version": "0.0.9",
+    "publisher": "anthonytamez",
+    "author": {
+        "name": "Anthony Tamez",
+        "email": "anthony.tamez@archarithms.com"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/roycrippen/vscode-joy-editor",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/roycrippen/vscode-joy-editor"
+    },
+    "keywords": [
+        "joy",
+        "concatenative",
+        "forth",
+        "language",
+        "programming"
+    ],
+    "bugs": {
+        "url": "https://github.com/roycrippen/vscode-joy-editorr"
+    },
+    "galleryBanner": {
+        "color": "#35364E",
+        "theme": "dark"
+    },
+    "engines": {
+        "vscode": "^1.10.0"
+    },
+    "categories": [
+        "Debuggers"
+    ],
+    "activationEvents": [
+        "onCommand:extension.openJoyEditor"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.openJoyEditor",
+                "title": "Joy Editor: Launch the editor"
+            },
+            {
+                "command": "extension.reloadJoyEditor",
+                "title": "Joy Editor: Reload the editor from the context of the current .joy file"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/jsdom": "^11.0.2",
+        "@types/mocha": "^2.2.32",
+        "@types/node": "^6.0.40",
+        "mocha": "^2.3.3",
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "@types/jquery": "^3.2.12",
+        "jquery": "^3.2.1",
+        "ts-loader": "^2.3.7",
+        "webpack": "^3.6.0"
+    },
+    "dependencies": {
+        "jquery": "^3.2.1"
+    }
 }
