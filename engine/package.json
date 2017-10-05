@@ -1,0 +1,36 @@
+{
+    "name": "vscode-joy-engine",
+    "displayName": "Joy Editor",
+    "description": "vscode joy engine",
+    "version": "0.0.9",
+    "publisher": "roycrippen",
+    "author": {
+        "name": "Roy Crippen",
+        "email": "roycrippen@gmail.com"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/roycrippen/vscode-joy-editor",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/roycrippen/vscode-joy-editor"
+    },
+    "keywords": [
+        "joy",
+        "concatenative",
+        "forth",
+        "language",
+        "programming"
+    ],
+    "bugs": {
+        "url": "https://github.com/roycrippen/vscode-joy-editorr"
+    },
+    "devDependencies": {
+        "@types/node": "^6.0.40",
+        "typescript": "^2.0.3",
+        "@types/jquery": "^3.2.12",
+        "webpack": "^3.6.0"
+    },
+    "dependencies": {
+        "jquery": "^3.2.1"
+    }
+}
