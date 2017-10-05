@@ -5,10 +5,54 @@ export function initialJoyprimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {
-        // const source = "\"(* Sample application for editor *)\n\n\\\"(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \\\"aaa \\\\\"bbb\\\\\" ccc\\\";\n    test2 == \\\"aaa  (* ccc *) ##\\\";\n\n    SAMPLELIB == \\\"samplelib.joy - simple sample library\\n\\\".\n\n(* end LIBRA *)\n\n\\\"samplelib is loaded\\n\\\" putchars.\n\"\n\n(* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n\"";
-        const source = "(* Sample application for editor *)\n\n (* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n \n\n (* \n    libload - read file and add to defines\n\n    DEFINE -\n        no lines between statements\n        ';' termination except last '.'\n*)\n\nDEFINE\n    square == dup *;\n    quad == square\n            square;\n    quad-list == [ quad ] map;\n    quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.\n\n[1 2 3 4 5] quad-prod-sum-diff.\n\n\n";
         // const source = ' \" a \\"b\\" c \" ';
-
+        const source = `
+        (* Sample application for editor *)
+        
+        (* FILE:   samplelib.joy *)
+        
+        LIBRA
+        
+            _samplelib == true; 
+        
+        (* more 
+           comments *)
+        
+            new-sum == 
+                0 
+                [ + ] 
+                fold;   # redefine sum # #############
+        
+            new-prod == 1 [ * ] fold;  # another comment 
+        
+            test1 == "aaa \"bbb\" ccc";
+            test2 == "aaa  (* ccc *) ##";
+        
+            SAMPLELIB == "samplelib.joy - simple sample library\n".
+        
+        (* end LIBRA *)
+        
+        "samplelib is loaded\n" putchars.
+        
+        
+        (* 
+            libload - read file and add to defines
+        
+            DEFINE -
+                no lines between statements
+                ';' termination except last '.'
+        *)
+        
+        DEFINE
+            square == dup *;
+            quad == square
+                    square;
+            quad-list == [ quad ] map;
+            quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.
+        
+        [1 2 3 4 5] quad-prod-sum-diff.
+        
+            `;
         j.processJoySource(source);
 
     });

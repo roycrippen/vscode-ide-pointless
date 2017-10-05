@@ -1,3 +1,23 @@
 {
-    "cSpell.enabled": false
+    "cSpell.enabled": true,
+    "editor.tabSize": 4,
+    "cSpell.enabledLanguageIds": [
+        "c",
+        "cpp",
+        "csharp",
+        "go",
+        "haskell",
+        "java",
+        "javascript",
+        "javascriptreact",
+        "json",
+        "latex",
+        "markdown",
+        "php",
+        "plaintext",
+        "python",
+        "text",
+        "typescriptreact",
+        "yml"
+    ]
 }

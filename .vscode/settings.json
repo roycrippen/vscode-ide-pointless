@@ -6,24 +6,24 @@
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
     },
-    "editor.tabSize": 2,
+    "editor.tabSize": 4,
     "cSpell.enabledLanguageIds": [
-      "c",
-      "cpp",
-      "csharp",
-      "go",
-      "haskell",
-      "java",
-      "javascript",
-      "javascriptreact",
-      "json",
-      "latex",
-      "markdown",
-      "php",
-      "plaintext",
-      "python",
-      "text",
-      "typescriptreact",
-      "yml"
+        "c",
+        "cpp",
+        "csharp",
+        "go",
+        "haskell",
+        "java",
+        "javascript",
+        "javascriptreact",
+        "json",
+        "latex",
+        "markdown",
+        "php",
+        "plaintext",
+        "python",
+        "text",
+        "typescriptreact",
+        "yml"
     ]
-  }
+}
