@@ -13,8 +13,7 @@
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/out/src/**/*.js",
-                "${workspaceRoot}/resources/built/**/*.js"
+                "${workspaceRoot}/out/**/*.js"
             ],
             "preLaunchTask": "npm"
         },

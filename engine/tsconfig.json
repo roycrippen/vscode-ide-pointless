@@ -1,10 +1,7 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
-        "outDir": "../resources/built",
-        "watch": true,
-        "allowJs": true,
-        "target": "es5",
+        "outDir": "../out",
+        "target": "es6",
         "module": "commonjs",
         "sourceMap": true,
         "preserveConstEnums": true,

@@ -17,6 +17,6 @@ module.exports = {
     },
     output: {
         filename: 'joy.bundle.js',
-        path: path.resolve(__dirname, '../resources/built')
+        path: path.resolve(__dirname, '../out')
     }
 };
