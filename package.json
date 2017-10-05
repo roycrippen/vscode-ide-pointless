@@ -68,5 +68,7 @@
     "ts-loader": "^2.3.7",
     "webpack": "^3.6.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
 }
