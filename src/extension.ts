@@ -1,9 +1,9 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as path from 'path';
+// import * as path from 'path';
 import { JoyEditorProvider } from './providers/joyEditorProvider';
-import JoyEditorsSettings from './common/configSettings';
+// import JoyEditorsSettings from './common/configSettings';
 
 export function activate(context: vscode.ExtensionContext) {
     const joyEditorUri = vscode.Uri.parse('joy-editor://authority/JoyEditor');
@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showErrorMessage("Active editor doesn't show a JOY script - please open one and/or relaunch the Joy Editor extension.");
     }
 
-    const settings = new JoyEditorsSettings();
+    // const settings = new JoyEditorsSettings();
 
     let provider = new JoyEditorProvider();
     let registration = vscode.workspace.registerTextDocumentContentProvider('joy-editor', provider);
@@ -46,13 +46,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 
-    let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {
-        if (typeof provider !== 'undefined') {
-            //TODO: implement on reload command
-            console.log('reload command...');
-            // provider.update(joyEditorUri);
-        }
-    });
+    // let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {
+    //     if (typeof provider !== 'undefined') {
+    //         //TODO: implement on reload command
+    //         console.log('reload command...');
+    //         // provider.update(joyEditorUri);
+    //     }
+    // });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 }
 
@@ -66,7 +66,7 @@ export default function (context: vscode.ExtensionContext): Thenable<vscode.Text
                     if (editor) {
                         resolve(editor);
                     } else {
-                        resolve(null);
+                        resolve();
                     }
                 }))
     });

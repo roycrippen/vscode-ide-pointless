@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "../out",
+        "outDir": "./out",
         "target": "es6",
         "module": "commonjs",
         "sourceMap": true,

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+
 const fs = require('fs');
 
 var _joyExtension = "joy";
@@ -66,8 +67,12 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
      * @param str - concatenated joy file represented as a string
      * @param filename - the root joy file to parse
      */
-    private recursiveLibloadParseAsString(str, filename): string {
+    private recursiveLibloadParseAsString(str: string, filename: string): string {
         console.log(`parsing file: ${filename}`);
+
+        if (vscode.window.activeTextEditor === undefined) {
+            return ""
+        }
 
         var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
 
@@ -75,7 +80,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
             var rawFile = fs.readFileSync(filename, 'utf8');
             var strFile = JSON.stringify(rawFile, null, 4);
             var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
-            var oldLibMatch = str.match(pattern);
+            // var oldLibMatch = str.match(pattern);
             var newlibMatch = strFile.match(pattern);
             str = (str === '') ? strFile : str.replace(pattern, strFile);
 
@@ -100,8 +105,12 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
      * @param array - array of joy files represented as strings
      * @param filename - the root joy file to parse
      */
-    private recursiveLibloadParseAsArray(array, filename): string[] {
+    private recursiveLibloadParseAsArray(array: string[], filename: string): string[] {
         console.log(`parsing file: ${filename}`);
+
+        if (vscode.window.activeTextEditor === undefined) {
+            return []
+        }
 
         var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
 
@@ -117,7 +126,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
                 newlibMatch.forEach((a) => {
                     var lib = a.match(/(^)".*?"/g);
                     if (lib !== null && typeof lib !== 'undefined' && lib.length > 0) {
-                        return this.recursiveLibloadParseAsArray(array, filePath + lib[0].trim().replace(/^"(.*)\\"$/g, '$1') + '.' + _joyExtension);
+                        array = this.recursiveLibloadParseAsArray(array, filePath + lib[0].trim().replace(/^"(.*)\\"$/g, '$1') + '.' + _joyExtension);
                     }
                 });
             }
@@ -134,16 +143,25 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
     private joyEditorPreview(uri: vscode.Uri): string {
 
         var relativePath = path.dirname(__dirname);
+        if (vscode.window.activeTextEditor === undefined) {
+            return ""
+        }
+
         var filename = vscode.window.activeTextEditor.document.fileName;
 
         var joyFileStr = this.recursiveLibloadParseAsString('', filename).trim()
-            .replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/;/g, "\\;");
+        // .replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/;/g, "\\;");
 
-        var pathMain = relativePath.replace('/out/src', '/src/providers/')
+        var pathMain = relativePath.replace('/out', '/src/providers/')
 
         _providerHtml = fs.readFileSync(pathMain + 'main.html', 'utf8')
             .replace(/\${relativePath}/g, relativePath)
             .replace(/\${joyFileStr}/g, joyFileStr);
+
+        let pathEngine = relativePath.replace('/out', '/engine/src/')
+
+        fs.writeFile(pathEngine + 'joy.data', joyFileStr);
+
 
         return _providerHtml;
     }

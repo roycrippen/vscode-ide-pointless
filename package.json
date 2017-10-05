@@ -38,7 +38,7 @@
     "activationEvents": [
         "onCommand:extension.openJoyEditor"
     ],
-    "main": "./out/src/extension",
+    "main": "./out/extension",
     "contributes": {
         "commands": [
             {

@@ -6,53 +6,8 @@ export function loadJoyprimitives(j: Joy) {
     // used for testing new code
     j.primitive('aaa', () => {
         // const source = ' \" a \\"b\\" c \" ';
-        const source = `
-        (* Sample application for editor *)
-        
-        (* FILE:   samplelib.joy *)
-        
-        LIBRA
-        
-            _samplelib == true; 
-        
-        (* more 
-           comments *)
-        
-            new-sum == 
-                0 
-                [ + ] 
-                fold;   # redefine sum # #############
-        
-            new-prod == 1 [ * ] fold;  # another comment 
-        
-            test1 == "aaa \"bbb\" ccc";
-            test2 == "aaa  (* ccc *) ##";
-        
-            SAMPLELIB == "samplelib.joy - simple sample library\n".
-        
-        (* end LIBRA *)
-        
-        "samplelib is loaded\n" putchars.
-        
-        
-        (* 
-            libload - read file and add to defines
-        
-            DEFINE -
-                no lines between statements
-                ';' termination except last '.'
-        *)
-        
-        DEFINE
-            square == dup *;
-            quad == square
-                    square;
-            quad-list == [ quad ] map;
-            quad-prod-sum-diff == quad-list dup new-prod swap new-sum -.
-        
-        [1 2 3 4 5] quad-prod-sum-diff.
-        
-            `;
+        let source = "(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n";
+
         j.processJoySource(source);
 
     });
@@ -156,8 +111,8 @@ export function loadJoyprimitives(j: Joy) {
     j.primitive('>=', (y: any, x: any) => { j.pushStack(y >= x) });
 
     // boolean/conditional
-    j.primitive('true', (x: any) => { j.pushStack(true) });
-    j.primitive('false', (x: any) => { j.pushStack(false) });
+    j.primitive('true', () => { j.pushStack(true) });
+    j.primitive('false', () => { j.pushStack(false) });
     j.primitive('not', (x: any) => { j.pushStack(!x) });
     j.primitive('and', (y: any, x: any) => { j.pushStack(y && x) });
     j.primitive('or', (y: any, x: any) => { j.pushStack(y || x) });

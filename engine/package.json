@@ -25,9 +25,9 @@
         "url": "https://github.com/roycrippen/vscode-joy-editorr"
     },
     "devDependencies": {
-        "@types/node": "^6.0.40",
-        "typescript": "^2.0.3",
         "@types/jquery": "^3.2.12",
+        "@types/node": "^6.0.88",
+        "typescript": "^2.0.3",
         "webpack": "^3.6.0"
     },
     "dependencies": {
