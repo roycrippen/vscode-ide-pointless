@@ -336,6 +336,8 @@ function kind(token: any) {
 }
 
 function update() {
+    if ($("#dropdown-search").is(":focus")) return;
+
     render(function () {
         if (token.length > 0) {
             return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
@@ -363,9 +365,14 @@ function update() {
         var s = ctx.Stack[i];
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
+
+    $("#error").empty();
+    $("#error").append("<div class='stack'/>").append(editor.joy.print([editor.joy.getErrors()]));
 }
 
 $(document).keydown(function (e) {
+    if ($("#dropdown-search").is(":focus")) return;
+    
     switch (e.which) {
         case 8: // Backspace
             e.preventDefault();
@@ -412,6 +419,8 @@ $(document).keydown(function (e) {
 });
 
 $(document).keypress(function (e) {
+    if ($("#dropdown-search").is(":focus")) return;
+    
     e.preventDefault();
     if (inQuote) {
         switch (e.which) {

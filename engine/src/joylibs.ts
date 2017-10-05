@@ -27,7 +27,7 @@ export function loadCoreLibries(j: Joy) {
   // from joy proper libraries, added for testing
   j.execute('[ [ dup "a" >= ] [ 32 - ] [ ] ifte ]      "to-upper"             define')
   j.execute('[ [ dup "a" < ]  [ 32 + ] [ ] ifte ]      "to-lower"             define')
-  j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define')
+  // j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define')
 
   /* eliminated
     j.execute('[ [ 2dip ] 2dip [ dip ] dip apply ]    "tri*"      define');
@@ -77,6 +77,8 @@ export function loadCoreLibries(j: Joy) {
   });
 
 } // loadCoreLibries
+
+var getJoyFileString: any;
 
 function contentProviderCallback() {
   console.debug('executing content provider callback');

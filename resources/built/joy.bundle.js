@@ -427,6 +427,8 @@ function kind(token) {
     }
 }
 function update() {
+    if ($("#dropdown-search").is(":focus"))
+        return;
     render(function () {
         if (token.length > 0) {
             return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
@@ -453,8 +455,12 @@ function update() {
         var s = ctx.Stack[i];
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
+    $("#error").empty();
+    $("#error").append("<div class='stack'/>").append(editor.joy.print([editor.joy.getErrors()]));
 }
 $(document).keydown(function (e) {
+    if ($("#dropdown-search").is(":focus"))
+        return;
     switch (e.which) {
         case 8:// Backspace
             e.preventDefault();
@@ -502,6 +508,8 @@ $(document).keydown(function (e) {
     update();
 });
 $(document).keypress(function (e) {
+    if ($("#dropdown-search").is(":focus"))
+        return;
     e.preventDefault();
     if (inQuote) {
         switch (e.which) {
@@ -11826,7 +11834,7 @@ function loadCoreLibries(j) {
     // from joy proper libraries, added for testing
     j.execute('[ [ dup "a" >= ] [ 32 - ] [ ] ifte ]      "to-upper"             define');
     j.execute('[ [ dup "a" < ]  [ 32 + ] [ ] ifte ]      "to-lower"             define');
-    j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define');
+    // j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define')
     /* eliminated
       j.execute('[ [ 2dip ] 2dip [ dip ] dip apply ]    "tri*"      define');
       j.execute('[ [ 2dip ] dip apply ]                 "2cleave*"  define');
@@ -11874,6 +11882,7 @@ function loadCoreLibries(j) {
     });
 } // loadCoreLibries
 exports.loadCoreLibries = loadCoreLibries;
+var getJoyFileString;
 function contentProviderCallback() {
     console.debug('executing content provider callback');
     //Note: getJoyFileString is a script function within the vscode content provider 
