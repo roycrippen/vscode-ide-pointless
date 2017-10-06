@@ -79,6 +79,8 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         if (fs.existsSync(filename)) {
             var rawFile = fs.readFileSync(filename, 'utf8');
             var strFile = JSON.stringify(rawFile, null, 4);
+            strFile = strFile.slice(1, strFile.length - 1)
+
             var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
             // var oldLibMatch = str.match(pattern);
             var newlibMatch = strFile.match(pattern);
@@ -93,7 +95,6 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
                 });
             }
         }
-
         return str;
     }
 
@@ -149,7 +150,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
 
         var filename = vscode.window.activeTextEditor.document.fileName;
 
-        var joyFileStr = this.recursiveLibloadParseAsString('', filename).trim()
+        var joyFileStr = this.recursiveLibloadParseAsString('', filename)
         // .replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/;/g, "\\;");
 
         var pathMain = relativePath.replace('/out', '/src/providers/')
@@ -158,10 +159,11 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
             .replace(/\${relativePath}/g, relativePath)
             .replace(/\${joyFileStr}/g, joyFileStr);
 
+
+        let testData = 'export const testData = \'' + joyFileStr + '\'';
         let pathEngine = relativePath.replace('/out', '/engine/src/')
-
-        fs.writeFile(pathEngine + 'joy.data', joyFileStr);
-
+        fs.writeFile(pathEngine + 'testdata.ts', testData);
+        fs.writeFile(pathEngine + 'testprovider.html', _providerHtml);
 
         return _providerHtml;
     }
