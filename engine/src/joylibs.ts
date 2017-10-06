@@ -78,10 +78,9 @@ export function loadCoreLibrary(j: Joy) {
 
 } // loadCoreLibries
 
-var getJoyFileString: any;
-
 function contentProviderCallback() {
     console.debug('executing content provider callback');
-    //Note: getJoyFileString is a script function within the vscode content provider 
-    return getJoyFileString();
+    //Note: getJoyFileString is a script function within the vscode content provider
+    const joyFileString = getJoyFileString()
+    return joyFileString
 }

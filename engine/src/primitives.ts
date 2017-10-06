@@ -1,14 +1,14 @@
 import { Joy } from "./engine"
+import { testData } from "./testdata"
 
 // load joy primitives into and instance of the engine
 export function loadJoyprimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {
-        // const source = ' \" a \\"b\\" c \" ';
-        let source = "(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n";
+        // let source = "(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n";
 
-        j.processJoySource(source);
+        j.processJoySource(testData);
 
     });
 
