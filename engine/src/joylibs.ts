@@ -80,7 +80,8 @@ export function loadCoreLibrary(j: Joy) {
 
 function contentProviderCallback() {
     console.debug('executing content provider callback');
-    //Note: getJoyFileString is a script function within the vscode content provider
-    const joyFileString = getJoyFileString()
+    /* Note: getJoyFileString is a script function within the vscode content provider.
+       Function eval is called to avoid 'getJoyFileString()' not defined typescript error and to validate */
+    const joyFileString = eval('getJoyFileString()')
     return joyFileString
 }
