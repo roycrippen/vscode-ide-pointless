@@ -105,9 +105,9 @@ span {
     color: #DDD;
 }
 
-#context, #output, #error
+#context, #output, #error, #result
 {
-    font-size: 24px;
+    font-size: 18px;
 }
 
 #error
@@ -115,14 +115,14 @@ span {
     color: red;
 }
 
-#context, #dictionary, #output, #error
+#context, #dictionary, #output, #error, #result
 {
     width: 100%;
     overflow: scroll;
     resize: vertical;
 }
 
-#context
+#context, #result
 {
     height: 6em;
 }

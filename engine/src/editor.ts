@@ -359,15 +359,27 @@ function update() {
         editor.joy.execute(c);
     }
 
-    var ctx = editor.joy.getStack();
+    const ctx = editor.joy.getStack();
     $("#context").empty();
     for (var i = 0; i < ctx.Stack.length; i++) {
-        var s = ctx.Stack[i];
+        const s = ctx.Stack[i];
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
 
+    const results = editor.joy.getResults();
+    $("#result").empty();
+    for (var i = 0; i < results.length; i++) {
+        const s = results[i];
+        $("#result").append("<div class='stack'/>").append(editor.joy.print([s]));
+    }
+
+    const errs = editor.joy.getErrors();
     $("#error").empty();
-    $("#error").append("<div class='stack'/>").append(editor.joy.print([editor.joy.getErrors()]));
+    for (var i = 0; i < errs.length; i++) {
+        const s = errs[i];
+        $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
+    }
+
 }
 
 $(document).keydown(function (e) {

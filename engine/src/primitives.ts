@@ -17,6 +17,7 @@ export function loadJoyprimitives(j: Joy) {
 
     // stack
     j.primitive('pop', () => { j.popStack(); });
+
     j.primitive('.', (x: any) => {
         let output = j.print(x);
         if (typeof (x) === "object" && x.kind === 'list') {

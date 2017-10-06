@@ -13,7 +13,6 @@ export class Joy {
     private results: string[]
     private context: { Stack: any[] }
     private defines: any
-    private displayConsole: string[]
 
     constructor() {
         this.dictionary = {}
@@ -21,7 +20,6 @@ export class Joy {
         this.results = []
         this.context = { Stack: [] }
         this.defines = {}
-        this.displayConsole = []
         loadJoyprimitives(this)
         loadCoreLibrary(this)
     }
@@ -43,7 +41,7 @@ export class Joy {
         this.errors = [];
     };
 
-    // result display from execution of '.' command
+    // display console, contains all results and console joy functions like '.' putchars'
     public pushResult = function (result: string) {
         this.results.push(result);
     };
@@ -54,7 +52,6 @@ export class Joy {
         this.results = [];
     };
 
-    // display console, contains all results and console joy functions like 'putchars'
     public concatDisplayConsole = function (displayText: string) {
         this.displayConsole = this.displayConsole.concat(displayText);
     };
