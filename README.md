@@ -8,6 +8,8 @@
 * `npm install`                             install dependencies
 * `../node_modules/webpack/bin/webpack.js`  compile the joy execution engine
 * `cd ..`                                   go back to the extension directory
+* `code` or `vscode`                        open vscode
+* `File : Open Folder`                     open `vscode-joy-editor` folder from within vscode
 * `ctrl+shift+P`                            type `Run Task`, select `Tasks:Run Task`, then select `npm`
 
 ## Get up and running straight away
