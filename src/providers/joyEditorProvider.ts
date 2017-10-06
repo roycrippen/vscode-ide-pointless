@@ -160,10 +160,10 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
             .replace(/\${joyFileStr}/g, joyFileStr);
 
 
-        let testData = 'export const testData = \'' + joyFileStr + '\'';
+        let testData = 'export const testData = \'' + joyFileStr + '\''
         let pathEngine = relativePath.replace('/out', '/engine/src/')
         fs.writeFile(pathEngine + 'testdata.ts', testData);
-        fs.writeFile(pathEngine + 'testprovider.html', _providerHtml);
+        fs.writeFile(pathEngine + 'testprovider.html', _providerHtml)
 
         return _providerHtml;
     }
