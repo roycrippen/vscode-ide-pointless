@@ -1,4 +1,4 @@
 out
 node_modules
 ./engine/node_modules
-./engine/test*
+./engine/src/test*

@@ -425,6 +425,8 @@ $(document).keydown(function (e) {
                 editor.SelectAll();
             }
             break;
+        default:
+            break;
     }
     $(document).focus(); // Prompts and alerts steal focus
     update();

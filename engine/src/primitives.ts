@@ -271,42 +271,42 @@ export function loadJoyprimitives(j: Joy) {
         }
     });
 
-    j.primitive('words', () => {
-        const words: any = [];
-        words.kind = 'list';
+    j.primitive('primitives', () => {
+        const primitives: any = [];
+        primitives.kind = 'list';
 
         j.words().forEach(key => {
             const func = j.word(key);
             if (func.kind === 'primitive') {
-                words.push(func);
+                primitives.push(func);
             }
         });
 
-        words.sort((a: any, b: any) => {
+        primitives.sort((a: any, b: any) => {
             if (a.disp > b.disp) return 1;
             if (a.disp < b.disp) return -1;
             return 0;
         });
-        return words;
+        return primitives;
     });
 
-    j.primitive('defines', () => {
-        const xs: any = [];
-        xs.kind = 'list';
+    j.primitive('library', () => {
+        const libray: any = [];
+        libray.kind = 'list';
 
         j.words().forEach(key => {
             const func = j.word(key);
             if (func.kind === 'secondary') {
-                xs.push(func);
+                libray.push(func);
             }
         });
 
-        xs.sort((a: any, b: any) => {
+        libray.sort((a: any, b: any) => {
             if (a.disp > b.disp) return 1;
             if (a.disp < b.disp) return -1;
             return 0;
         });
-        return xs;
+        return libray;
     });
 
     // utility function

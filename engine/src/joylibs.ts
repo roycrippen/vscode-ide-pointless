@@ -11,7 +11,7 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [ swap ] dip ]                       "swapd"     define')
     j.execute('[ [ true ] swap when ]                 "apply"     define')
     j.execute('[ 0 swap - ]                           "neg"       define')
-    j.execute('[ dup 0 < [ neg ] when ]               "abs"       define')
+    j.execute('[ dup 0  [ < ] [ neg ] when ]          "abs"       define')
     j.execute('[ dupd dip ]                           "keep"      define')
     j.execute('[ pop pop ]                            "pop2"      define')
     j.execute('[ pop pop pop ]                        "pop3"      define')
@@ -70,9 +70,13 @@ export function loadCoreLibrary(j: Joy) {
         $("#dropdown-search").empty();
         var defs = j.getDefines();
         console.debug('populating dictionary dropdown');
-        for (var _i = 0, _a = Object.entries(defs); _i < _a.length; _i++) {
-            var _b = _a[_i], k = _b[0], v = _b[1];
-            $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + k + "\">" + k + " == " + v + "</a>");
+        // for (var _i = 0, _a = Object.entries(defs); _i < _a.length; _i++) {
+        //     var _b = _a[_i], k = _b[0], v = _b[1];
+        //     $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + k + "\">" + k + " == " + v + "</a>");
+        // }
+        for (var i = 0; i < defs.length; i++) {
+            // var _b = _a[_i], k = _b[0], v = _b[1];
+            $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + defs[i] + "\">" + defs[i] + "</a>");
         }
     });
 

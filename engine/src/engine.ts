@@ -19,7 +19,7 @@ export class Joy {
         this.errors = []
         this.results = []
         this.context = { Stack: [] }
-        this.defines = {}
+        this.defines = []
         loadJoyprimitives(this)
         loadCoreLibrary(this)
     }
@@ -225,6 +225,7 @@ export class Joy {
         this.dictionary[name] = c;
     }
 
+
     public words = function () {
         const w: string[] = [];
         Object.keys(this.dictionary).forEach((key) => {
@@ -242,10 +243,20 @@ export class Joy {
         }
         const newSource = tokens.slice(1, len - 3).reduce((s, tok) => `${s} ${tok}`);
         const name: string = tokens[len - 2].replace(/"/g, '');
-        this.defines[name] = newSource;
+        const defineStr = `${name} == ${newSource}`
+        this.defines.push(defineStr)
+        // this.defines[name] = newSource;
     }
     public getDefines = function () {
-        return this.defines;
+        let xs = this.defines
+        // libray.sort((a: any, b: any) => {
+        //     if (a.disp > b.disp) return 1;
+        //     if (a.disp < b.disp) return -1;
+        //     return 0;
+        // });
+
+        xs.sort();
+        return xs;
     };
 
 
