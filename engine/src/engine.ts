@@ -1,7 +1,8 @@
 // Joy Language Engine
 
-import { Lexer } from "./lexer"
-import { Token, tokToStr } from "./tokens"
+// import { Lexer } from "./lexer"
+import { Token } from "./tokens"
+import { lexJoyCommands } from "./joy-lexer";
 import { loadJoyprimitives } from "./primitives"
 import { loadCoreLibrary } from "./joylibs"
 
@@ -12,7 +13,7 @@ export class Joy {
     private errors: string[]
     private results: string[]
     private context: { Stack: any[] }
-    private defines: any
+    private defines: string[]
 
     constructor() {
         this.dictionary = {}
@@ -229,7 +230,7 @@ export class Joy {
     public words = function () {
         const w: string[] = [];
         Object.keys(this.dictionary).forEach((key) => {
-            w.push(key);
+            if (key !== 'define') { w.push(key) };
         });
         return w;
     };
@@ -247,14 +248,8 @@ export class Joy {
         this.defines.push(defineStr)
         // this.defines[name] = newSource;
     }
-    public getDefines = function () {
+    public getDefines = function (): string[] {
         let xs = this.defines
-        // libray.sort((a: any, b: any) => {
-        //     if (a.disp > b.disp) return 1;
-        //     if (a.disp < b.disp) return -1;
-        //     return 0;
-        // });
-
         xs.sort();
         return xs;
     };
@@ -319,28 +314,6 @@ export class Joy {
         this.compile(ast)(this);
     };
 
-    lexNew = function (src: string): Tokens[] {
-        let toks: Tokens[] = [];
-        let lexer = new Lexer(src);
-        let i = 0;
-        while (true) {
-            let token = lexer.next();
-            if (token === Token.EOF)
-                break;
-            if (token === Token.WHITESPACE || token === Token.NEWLINE || token === Token.COMMENT)
-                continue;
-            let value: string = "";
-            if (token === Token.STRING || token === Token.QUOTED_STRING) {
-                value = lexer.value();
-            } else {
-                value = tokToStr[Token[token]];
-            }
-            toks.push({ token: token, value: value });
-            i++;
-        }
-        return toks;
-    }
-
     complieJoyDefines(source: string) {
         function joyDefine(s: string, j: Joy) {
             const xs = s.split(' ');
@@ -360,37 +333,43 @@ export class Joy {
     }
 
     public processJoySource = function (source: string) {
-
-        let tokens = this.lexNew(source);
-
-        for (let i = 0; i < tokens.length; i++) {
-            switch (tokens[i].value) {
-                case "LIBRA":
-                case "DEFINE":
-                    i++;
-                    let s: string = "";
-                    while (i < tokens.length) {
-                        let tok = tokens[i].token;
-                        if (tok != Token.DOT) {
-                            s += ' ' + tokens[i].value;
-                            i++
-                            continue;
-                        } else {
-                            break;
+        let sources = source
+            .split(',')
+            .map(x => {
+                x = x.slice(1, x.length - 1)
+                return x
+            })
+        sources.reverse()
+        sources.forEach(x => {
+            let tokens = lexJoyCommands(x);
+            for (let i = 0; i < tokens.length; i++) {
+                switch (tokens[i].value) {
+                    case "LIBRA":
+                    case "DEFINE":
+                        i++;
+                        let s: string = "";
+                        while (i < tokens.length) {
+                            let tok = tokens[i].token;
+                            if (tok != Token.DOT) {
+                                s += ' ' + tokens[i].value;
+                                i++
+                                continue;
+                            } else {
+                                break;
+                            }
                         }
-                    }
-                    this.complieJoyDefines(s);
-                    break;
+                        this.complieJoyDefines(s);
+                        break;
+                }
             }
-        }
-
+        }) // foreach
     };
 
 } // Joy
 
 
 
-interface Tokens {
-    token: Token
-    value: any
-}
+// interface Tokens {
+//     token: Token
+//     value: any
+// }

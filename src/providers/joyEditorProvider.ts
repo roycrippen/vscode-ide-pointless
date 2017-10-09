@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-
 const fs = require('fs');
 
 var _joyExtension = "joy";
@@ -150,19 +149,19 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
 
         var filename = vscode.window.activeTextEditor.document.fileName;
 
-        var joyFileStr = this.recursiveLibloadParseAsString('', filename)
+        // var joyFileStr = this.recursiveLibloadParseAsString('', filename)
         // .replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/;/g, "\\;");
+
+        let joyFileStrs = this.recursiveLibloadParseAsArray([], filename)
 
         var pathMain = relativePath.replace('/out', '/src/providers/')
 
         _providerHtml = fs.readFileSync(pathMain + 'main.html', 'utf8')
             .replace(/\${relativePath}/g, relativePath)
-            .replace(/\${joyFileStr}/g, joyFileStr);
+            .replace(/\${joyFileStrs}/g, joyFileStrs);
 
 
-        let testData = 'export const testData = \'' + joyFileStr + '\''
         let pathEngine = relativePath.replace('/out', '/engine/src/')
-        fs.writeFile(pathEngine + 'testdata.ts', testData);
         fs.writeFile(pathEngine + 'testprovider.html', _providerHtml)
 
         return _providerHtml;

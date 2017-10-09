@@ -26,8 +26,8 @@ export function loadCoreLibrary(j: Joy) {
 
     // from joy proper libraries, added for testing
     j.execute('[ [ dup "a" >= ] [ 32 - ] [ ] ifte ]      "to-upper"             define')
-    j.execute('[ [ dup "a" < ]  [ 32 + ] [ ] ifte ]      "to-lower"             define')
-    // j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define')
+    j.execute('[ [ dup "a" <  ] [ 32 + ] [ ] ifte ]      "to-lower"             define')
+    j.execute('[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday" ] "weekdays" define')
 
     /* eliminated
       j.execute('[ [ 2dip ] 2dip [ dip ] dip apply ]    "tri*"      define');
@@ -65,18 +65,15 @@ export function loadCoreLibrary(j: Joy) {
 
     $(document).ready(function () {
         console.debug('document ready');
-        var joyStr = contentProviderCallback();
-        j.processJoySource(joyStr);
+        var joyStrs = contentProviderCallback();
+        j.processJoySource(joyStrs);
         $("#dropdown-search").empty();
         var defs = j.getDefines();
         console.debug('populating dictionary dropdown');
-        // for (var _i = 0, _a = Object.entries(defs); _i < _a.length; _i++) {
-        //     var _b = _a[_i], k = _b[0], v = _b[1];
-        //     $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + k + "\">" + k + " == " + v + "</a>");
-        // }
         for (var i = 0; i < defs.length; i++) {
-            // var _b = _a[_i], k = _b[0], v = _b[1];
-            $("#dropdown-dictionary").append("<a class=\"drop-element\" href=\"#" + defs[i] + "\">" + defs[i] + "</a>");
+            const key: string = defs[i].trim().slice(0, defs[i].indexOf('=='))
+            const value = defs[i].trim()
+            $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
         }
     });
 
@@ -86,6 +83,6 @@ function contentProviderCallback() {
     console.debug('executing content provider callback');
     /* Note: getJoyFileString is a script function within the vscode content provider.
        Function eval is called to avoid 'getJoyFileString()' not defined typescript error and to validate */
-    const joyFileString = eval('getJoyFileString()')
-    return joyFileString
+    const joyFileStrings = eval('getJoyFileStrings()')
+    return joyFileStrings
 }
