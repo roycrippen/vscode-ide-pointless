@@ -1,5 +1,6 @@
 import { Joy } from "./engine"
 import { testData } from "./testdata"
+import { update } from "./editor"
 
 // load joy primitives into and instance of the engine
 export function loadJoyprimitives(j: Joy) {
@@ -24,6 +25,10 @@ export function loadJoyprimitives(j: Joy) {
             output = `[ ${output}]`;
         }
         j.pushResult(output)
+        j.editor.DeletePrev(false, false)
+        j.editor.DeletePrev(false, false)
+        $(document).focus(); // Prompts and alerts steal focus
+        update();
     });
 
     j.primitive('dup', (x: any) => {

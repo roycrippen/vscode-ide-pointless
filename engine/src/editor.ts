@@ -15,7 +15,7 @@ export class Editor {
     private selection: any;
 
     constructor() {
-        this.joy = new Joy();
+        this.joy = new Joy(this);
         this.root = { type: "Nil" };
         this.cursor = this.root;
         this.selection = { from: null, to: null };
@@ -335,7 +335,7 @@ function kind(token: any) {
     }
 }
 
-function update() {
+export function update() {
     if ($("#dropdown-search").is(":focus")) return;
 
     render(function () {

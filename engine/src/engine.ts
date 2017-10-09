@@ -5,6 +5,7 @@ import { Token } from "./tokens"
 import { lexJoyCommands } from "./joy-lexer";
 import { loadJoyprimitives } from "./primitives"
 import { loadCoreLibrary } from "./joylibs"
+import * as e from "./editor"
 
 export class Joy {
 
@@ -14,8 +15,10 @@ export class Joy {
     private results: string[]
     private context: { Stack: any[] }
     private defines: string[]
+    public editor: e.Editor
 
-    constructor() {
+    constructor(editor: e.Editor) {
+        this.editor = editor;
         this.dictionary = {}
         this.errors = []
         this.results = []
@@ -303,7 +306,7 @@ export class Joy {
 
     public execute = function (source: string) {
         this.clearErrors();
-        this.clearResults();
+        // this.clearResults();
         let tokens: string[] = this.lex(source);
         this.storeIfDefine(tokens);
         let ast: any = this.parse(tokens);
