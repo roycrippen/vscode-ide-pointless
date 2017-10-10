@@ -105,24 +105,30 @@ span {
     color: #DDD;
 }
 
-#context, #output, #error, #result
+#context, #output, #error, #result, #display
 {
     font-size: 18px;
 }
+
+/* #display
+{
+    font-size: 18px;
+    height: 6em;
+} */
 
 #error
 {
     color: red;
 }
 
-#context, #dictionary, #output, #error, #result
+#context, #dictionary, #output, #error, #result, #display
 {
     width: 100%;
     overflow: scroll;
     resize: vertical;
 }
 
-#context, #result
+#context, #result, #display
 {
     height: 6em;
 }

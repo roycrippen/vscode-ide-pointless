@@ -12,16 +12,18 @@ export class Joy {
     // state variables
     private dictionary: { [key: string]: any[] }
     private errors: string[]
-    private results: string[]
+    private resultConsole: string
+    private displayConsole: string
     private context: { Stack: any[] }
     private defines: string[]
     public editor: e.Editor
 
     constructor(editor: e.Editor) {
-        this.editor = editor;
+        this.editor = editor
         this.dictionary = {}
         this.errors = []
-        this.results = []
+        this.resultConsole = ""
+        this.displayConsole = ""
         this.context = { Stack: [] }
         this.defines = []
         loadJoyprimitives(this)
@@ -46,24 +48,26 @@ export class Joy {
     };
 
     // display console, contains all results and console joy functions like '.' putchars'
-    public pushResult = function (result: string) {
-        this.results.push(result);
+    public concatResult = function (result: string) {
+        const _result = result.replace(/\\n|\n/g, "<br />")
+        this.resultConsole = this.resultConsole.concat(_result)
     };
-    public getResults = function () {
-        return this.results;
+    public getResultConsole = function (): string {
+        return this.resultConsole;
     };
-    public clearResults = function () {
-        this.results = [];
+    public clearResultConsole = function () {
+        this.results = "";
     };
 
-    public concatDisplayConsole = function (displayText: string) {
-        this.displayConsole = this.displayConsole.concat(displayText);
+    public concatDisplayConsole = function (display: string) {
+        const _display = display.replace(/\\n/g, "<br />")
+        this.displayConsole = this.displayConsole.concat(_display);
     };
-    public getDisplayConsole = function () {
+    public getDisplayConsole = function (): string {
         return this.displayConsole;
     };
     public clearDisplayConsole = function () {
-        this.displayConsole = [];
+        this.displayConsole = "";
     };
 
     // lex the joy source string
@@ -186,7 +190,7 @@ export class Joy {
             case 'number':
             case 'string':
             case 'boolean':
-                return ast;
+                return ast.toString();
             case 'object':
                 for (let i = 0; i < ast.length; i += 1) {
                     const a = ast[i];
@@ -345,6 +349,7 @@ export class Joy {
         sources.reverse()
         sources.forEach(x => {
             let tokens = lexJoyCommands(x);
+            let runCommand = "";
             for (let i = 0; i < tokens.length; i++) {
                 switch (tokens[i].value) {
                     case "LIBRA":
@@ -354,7 +359,7 @@ export class Joy {
                         while (i < tokens.length) {
                             let tok = tokens[i].token;
                             if (tok != Token.DOT) {
-                                s += ' ' + tokens[i].value;
+                                s += ` ${tokens[i].value}`
                                 i++
                                 continue;
                             } else {
@@ -363,6 +368,12 @@ export class Joy {
                         }
                         this.complieJoyDefines(s);
                         break;
+                    case ".":
+                        this.execute(`${runCommand} .`)
+                        runCommand = ""
+                        break
+                    default:
+                        runCommand += ` ${tokens[i].value}`
                 }
             }
         }) // foreach

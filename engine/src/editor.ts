@@ -366,12 +366,13 @@ export function update() {
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
 
-    const results = editor.joy.getResults();
+    const results = editor.joy.getResultConsole();
     $("#result").empty();
-    for (var i = 0; i < results.length; i++) {
-        const s = results[i];
-        $("#result").append("<div class='stack'/>").append(editor.joy.print([s]));
-    }
+    $("#result").append("<div class='stack'/>").append(results);
+
+    const display = editor.joy.getDisplayConsole();
+    $("#display").empty();
+    $("#display").append("<div class='stack'/>").append(display);
 
     const errs = editor.joy.getErrors();
     $("#error").empty();

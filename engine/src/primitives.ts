@@ -18,18 +18,6 @@ export function loadJoyprimitives(j: Joy) {
     // stack
     j.primitive('pop', () => { j.popStack(); });
 
-    j.primitive('.', (x: any) => {
-        let output = j.print(x);
-        if (typeof (x) === "object" && x.kind === 'list') {
-            output = `[ ${output}]`;
-        }
-        j.pushResult(output)
-        j.editor.DeletePrev(false, false)
-        j.editor.DeletePrev(false, false)
-        $(document).focus(); // Prompts and alerts steal focus
-        update();
-    });
-
     j.primitive('dup', (x: any) => {
         const ret: any = [x, x];
         ret.kind = 'tuple';
@@ -49,6 +37,12 @@ export function loadJoyprimitives(j: Joy) {
             return;
         }
         j.concatDisplayConsole(j.print(x));
+        if (j.editor.Cursor().type !== "Nil") {
+            j.editor.DeletePrev(false, false)
+            j.editor.DeletePrev(false, false)
+            $(document).focus(); // Prompts and alerts steal focus
+            update();
+        }
     });
 
     // combinators
@@ -276,6 +270,32 @@ export function loadJoyprimitives(j: Joy) {
                 break;
             default:
                 j.pushError("first argument of 'fold' must be a string or list/quotation");
+        }
+    });
+
+    // convenience, not displayed a true primitives
+    j.primitive('libload', (s: string) => {
+        // do nothing, libraries loaded through extension
+    });
+
+    j.primitive('.', (x: any) => {
+        // empty display console to results first
+        j.concatResult(j.getDisplayConsole())
+        j.clearDisplayConsole()
+
+        if (x !== undefined) {
+            let output = j.print(x);
+            if (typeof (x) === "object" && x.kind === 'list') {
+                output = `[ ${output}]`;
+            }
+            output = `${output}<br />`
+            j.concatResult(output)
+        }
+        if (j.editor.Cursor().type !== "Nil") {
+            j.editor.DeletePrev(false, false)
+            j.editor.DeletePrev(false, false)
+            $(document).focus(); // Prompts and alerts steal focus
+            update();
         }
     });
 
