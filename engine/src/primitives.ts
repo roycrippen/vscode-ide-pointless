@@ -123,9 +123,9 @@ export function loadJoyprimitives(j: Joy) {
     j.primitive('or', (y: any, x: any) => { j.pushStack(y || x) });
     j.primitive('xor', (y: any, x: any) => { j.pushStack((y || x) && !(y && x)) });
     j.primitive('iflist', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
-    j.primitive('ifinteger', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 === 0) });
-    j.primitive('iffloat', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 !== 0) });
-    j.primitive('ifstring', (x: string) => { j.pushStack(typeof x === 'string') });
+    // j.primitive('ifinteger', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 === 0) });
+    // j.primitive('iffloat', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 !== 0) });
+    // j.primitive('ifstring', (x: string) => { j.pushStack(typeof x === 'string') });
     j.primitive('ifte', (x: any, p: boolean, q: any) => {
         j.run(x);
         const predicate = j.popStack();
@@ -285,7 +285,9 @@ export function loadJoyprimitives(j: Joy) {
 
         j.words().forEach(key => {
             const func = j.word(key);
-            if (func.kind === 'primitive') {
+            const kind = func.kind;
+            const excluded = key === 'primitives' || key === 'library' || key === 'aaa' || key === '.'
+            if (kind === 'primitive' && !excluded) {
                 primitives.push(func);
             }
         });
