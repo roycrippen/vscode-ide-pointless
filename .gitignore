@@ -2,4 +2,3 @@ out
 node_modules
 engine/node_modules
 engine/src/testprovider.html
-engine/src/testdata.ts

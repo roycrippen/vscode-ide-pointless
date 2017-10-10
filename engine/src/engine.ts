@@ -266,7 +266,7 @@ export class Joy {
             const args = j.context.Stack.slice(0, len).reverse(); // TODO: more efficient that slice/reverse
             j.context.Stack = j.context.Stack.slice(len);
             const result = func(...args);
-            if (result) {
+            if (result !== undefined) {
                 if (result.kind === 'tuple') {
                     for (let i = 0; i < result.length; i += 1) {
                         j.context.Stack.unshift(result[i]);

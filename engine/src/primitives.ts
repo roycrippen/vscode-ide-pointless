@@ -1,5 +1,4 @@
 import { Joy } from "./engine"
-import { testData } from "./testdata"
 import { update } from "./editor"
 
 // load joy primitives into and instance of the engine
@@ -7,9 +6,9 @@ export function loadJoyprimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {
-        // let source = "(* FILE:   samplelib.joy *)\n\nLIBRA\n\n    _samplelib == true; \n\n(* more \n   comments *)\n\n    new-sum == \n        0 \n        [ + ] \n        fold;   # redefine sum # #############\n\n    new-prod == 1 [ * ] fold;  # another comment \n\n    test1 == \"aaa \\\"bbb\\\" ccc\";\n    test2 == \"aaa  (* ccc *) ##\";\n\n    SAMPLELIB == \"samplelib.joy - simple sample library\\n\".\n\n(* end LIBRA *)\n\n\"samplelib is loaded\\n\" putchars.\n";
+        let source = "";
 
-        j.processJoySource(testData);
+        j.processJoySource(source);
 
     });
 
@@ -190,32 +189,34 @@ export function loadJoyprimitives(j: Joy) {
     });
 
     j.primitive('map', (xs: any, q: any) => {
-        let ys = '';
-        const xsCopy = xs;
+        let ys = ''
+        const xsCopy = xs
         switch (typeof xs) {
             case 'string':
                 for (let i = 0; i < xs.length; i += 1) {
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    const v = j.popStack();
-                    ys += v;
+                    j.pushStack(xs[i])
+                    j.run(q)
+                    j.assertStack(1)
+                    const v = j.popStack()
+                    ys += v
                 }
-                j.pushStack(ys);
-                break;
+                j.pushStack(ys)
+                break
             case 'object':
                 if (xs.kind === 'list') {
                     for (let i = 0; i < xs.length; i += 1) {
-                        j.pushStack(xsCopy[i].val);
-                        j.run(q);
-                        const v = j.popStack();
-                        xsCopy[i].val = v;
-                        xsCopy[i].disp = v.toString();
+                        j.pushStack(xsCopy[i].val)
+                        j.run(q)
+                        j.assertStack(1)
+                        const v = j.popStack()
+                        xsCopy[i].val = v
+                        xsCopy[i].disp = v.toString()
                     }
-                    j.pushStack(xs);
+                    j.pushStack(xs)
                 }
                 break;
             default:
-                j.pushError("first argument of 'map' must be a string or list/quotation");
+                j.pushError("first argument of 'map' must be a string or list/quotation")
         }
     });
 
@@ -256,6 +257,7 @@ export function loadJoyprimitives(j: Joy) {
                     j.pushStack(a);
                     j.pushStack(xs[i]);
                     j.run(q);
+                    j.assertStack(1)
                     a = j.popStack();
                 }
                 j.pushStack(a);
@@ -266,6 +268,7 @@ export function loadJoyprimitives(j: Joy) {
                         j.pushStack(a);
                         j.pushStack(xs[i].val);
                         j.run(q);
+                        j.assertStack(1)
                         a = j.popStack();
                     }
                     j.pushStack(a);
