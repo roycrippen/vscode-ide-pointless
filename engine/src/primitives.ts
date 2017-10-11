@@ -155,10 +155,12 @@ export function loadJoyprimitives(j: Joy) {
     // j.primitive('ifinteger', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 === 0) });
     // j.primitive('iffloat', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 !== 0) });
     // j.primitive('ifstring', (x: string) => { j.pushStack(typeof x === 'string') });
-    j.primitive('ifte', (x: any, p: boolean, q: any) => {
-        j.run(x);
-        const predicate = j.popStack();
-        j.run(predicate ? p : q);
+    j.primitive('ifte', (v: any, x: any, p: any, q: any) => {
+        j.pushStack(v)
+        j.pushStack(v)
+        j.run(x)
+        const predicate = j.popStack()
+        j.run(predicate ? p : q)
     });
 
     // lists
