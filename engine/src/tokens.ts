@@ -22,6 +22,11 @@ export enum Token {
     ERROR,
     EQEQ,
     IDENTIFIER,
+    GT,
+    GTEQ,
+    LT,
+    LTEQ,
+    EQ,
     UNKNOWN
 }
 
@@ -32,6 +37,10 @@ export interface StrToTok {
 export const keywords: StrToTok = {
     "LIBRA": Token.LIBRA,
     "DEFINE": Token.DEFINE,
+    "GT": Token.GT,
+    "GTEQ": Token.GTEQ,
+    "LT": Token.LT,
+    "LTEQ": Token.LTEQ,
 };
 
 export interface TokToStr {
@@ -46,4 +55,9 @@ export const tokToStr: TokToStr = {
     R_BRACKET: "]",
     SEMICOLON: ";",
     DOT: ".",
+    GT: ">",
+    GTEQ: ">=",
+    LT: "<",
+    LTEQ: "<=",
+    EQ: "=",
 }

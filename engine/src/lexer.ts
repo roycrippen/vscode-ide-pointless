@@ -59,8 +59,12 @@ export class Lexer {
                 return Token.R_CURLY;
             case ':':
                 return Token.COLON;
+            case '>':
+                return this.matchChar('=') ? Token.GTEQ : Token.GT
+            case '<':
+                return this.matchChar('=') ? Token.LTEQ : Token.LT
             case '=':
-                return this.matchChar('=') ? Token.EQEQ : Token.STRING
+                return this.matchChar('=') ? Token.EQEQ : Token.EQ
             case '"':
             case '\'':
                 return this.quotedString(c);
