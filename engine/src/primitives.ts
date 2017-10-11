@@ -31,12 +31,47 @@ export function loadJoyprimitives(j: Joy) {
     });
 
     // stdout/stdin
-    j.primitive('putchars', (x: string) => {
-        if (typeof x !== 'string') {
-            j.pushError('string needed for putchars');
-            return;
+    j.primitive('put', (x: any) => {
+        switch (typeof (x)) {
+            case "number":
+            case "boolean":
+                j.concatDisplayConsole(`${j.print(x)} `)
+                break
+            case "string":
+                if (x.length != 1) {
+                    j.pushError('number, boolean or single character string needed for put');
+                    return
+                }
+                j.concatDisplayConsole(`${x} `);
+                break
+            default:
+                j.pushError('number, boolean or single character string needed for put');
+                return
         }
-        j.concatDisplayConsole(j.print(x));
+        if (j.editor.Cursor().type !== "Nil") {
+            j.editor.DeletePrev(false, false)
+            j.editor.DeletePrev(false, false)
+            $(document).focus(); // Prompts and alerts steal focus
+            update();
+        }
+    });
+
+    j.primitive('putch', (x: any) => {
+        switch (typeof (x)) {
+            case "number":
+                let s = String.fromCharCode(x)
+                j.concatDisplayConsole(j.print(s))
+                break
+            case "string":
+                if (x.length != 1) {
+                    j.pushError('number, boolean or single character string needed for put');
+                    return
+                }
+                j.concatDisplayConsole(x)
+                break
+            default:
+                j.pushError('number, boolean or single character string needed for put');
+        }
         if (j.editor.Cursor().type !== "Nil") {
             j.editor.DeletePrev(false, false)
             j.editor.DeletePrev(false, false)
@@ -127,13 +162,15 @@ export function loadJoyprimitives(j: Joy) {
     });
 
     // lists
-    j.primitive('size', (x: any) => x.length);
+    j.primitive('size', (x: any) => {
+        x.length
+    });
 
     j.primitive('cons', (x: any, xs: any) => {
         if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
             return x + xs;
         }
-        if (typeof x === 'object' || !(typeof xs === 'object' && xs.kind === 'list')) {
+        if ((typeof x === 'object' && x.kind !== 'list') || !(typeof xs === 'object' && xs.kind === 'list')) {
             j.pushError("arguments for 'cons' must be a literal followed by a list/quotation");
             return xs;
         }
@@ -157,14 +194,14 @@ export function loadJoyprimitives(j: Joy) {
 
     j.primitive('concat', (xs: any, ys: any) => {
         if (typeof xs !== typeof ys) {
-            j.pushError("arguments for 'conat' must be the same type");
+            j.pushError("arguments for 'concat' must be the same type");
             return xs;
         }
         if (typeof xs === 'string' && typeof ys === 'string') {
             return xs.concat(ys);
         }
         if (xs.kind !== 'list' || ys.kind !== 'list') {
-            j.pushError("arguments for 'conat' must be a lists and/or quatations");
+            j.pushError("arguments for 'concat' must be a lists and/or quotations");
             return xs;
         }
         for (let i = 0; i < ys.length; i += 1) {
@@ -180,6 +217,32 @@ export function loadJoyprimitives(j: Joy) {
             r.push({ kind: 'literal', disp: i.toString(), val: i });
         }
         j.pushStack(r);
+    });
+
+    j.primitive('step', (xs: any, q: any) => {
+        if (q === undefined) {
+            j.pushError("second argument of 'step' must be a quotation")
+            return
+        }
+        const xsCopy = xs
+        switch (typeof xs) {
+            case 'string':
+                for (let i = 0; i < xs.length; i += 1) {
+                    j.pushStack(xs[i])
+                    j.run(q)
+                }
+                break
+            case 'object':
+                if (xs.kind === 'list') {
+                    for (let i = 0; i < xs.length; i += 1) {
+                        j.pushStack(xsCopy[i].val)
+                        j.run(q)
+                    }
+                }
+                break;
+            default:
+                j.pushError("first argument of 'map' must be a string or list/quotation")
+        }
     });
 
     j.primitive('map', (xs: any, q: any) => {
@@ -306,7 +369,8 @@ export function loadJoyprimitives(j: Joy) {
         j.words().forEach(key => {
             const func = j.word(key);
             const kind = func.kind;
-            const excluded = key === 'primitives' || key === 'library' || key === 'aaa' || key === '.'
+            const excluded = key === 'primitives' || key === 'library' ||
+                key === 'aaa' || key === '.' || key === 'libload'
             if (kind === 'primitive' && !excluded) {
                 primitives.push(func);
             }

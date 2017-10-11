@@ -7,5 +7,11 @@
         "out": true // set this to false to include "out" folder in search results
     },
     "editor.tabSize": 4,
-    "cSpell.language": "en"
+    "cSpell.language": "en",
+    "cSpell.words": [
+        "combinators",
+        "libload",
+        "putch",
+        "snoc"
+    ]
 }
