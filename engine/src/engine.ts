@@ -3,7 +3,7 @@
 // import { Lexer } from "./lexer"
 import { Token } from "./tokens"
 import { lexJoyCommands } from "./joy-lexer";
-import { loadJoyprimitives } from "./primitives"
+import { loadJoyPrimitives } from "./primitives"
 import { loadCoreLibrary } from "./joylibs"
 import * as e from "./editor"
 
@@ -26,13 +26,13 @@ export class Joy {
         this.displayConsole = ""
         this.context = { Stack: [] }
         this.defines = []
-        loadJoyprimitives(this)
+        loadJoyPrimitives(this)
         loadCoreLibrary(this)
     }
 
     public getContext() {
-        let newContext = Object.assign({}, this.context)
-        return newContext
+        let newStack = deepCopy(this.context.Stack)
+        return newStack
     }
 
     public setContext(context: { Stack: any[] }) {
@@ -330,7 +330,7 @@ export class Joy {
         this.compile(ast)(this);
     };
 
-    complieJoyDefines(source: string) {
+    compileJoyDefines(source: string) {
         function joyDefine(s: string, j: Joy) {
             const xs = s.split(' ');
             const len = xs.length;
@@ -391,8 +391,6 @@ export class Joy {
 } // Joy
 
 
-
-// interface Tokens {
-//     token: Token
-//     value: any
-// }
+export function deepCopy<T>(o: T): T {
+    return JSON.parse(JSON.stringify(o));
+}

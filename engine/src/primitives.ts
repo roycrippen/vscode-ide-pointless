@@ -2,7 +2,7 @@ import { Joy } from "./engine"
 import { update } from "./editor"
 
 // load joy primitives into and instance of the engine
-export function loadJoyprimitives(j: Joy) {
+export function loadJoyPrimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {
@@ -159,10 +159,10 @@ export function loadJoyprimitives(j: Joy) {
         const contextCopy = j.getContext()
         j.run(x)
         const predicate = j.popStack()
+        j.setContext({ Stack: contextCopy })
         j.run(predicate ? p : q)
-        const v = j.popStack()
-        j.setContext(contextCopy)
-        j.pushStack(v)
+        // const v = j.popStack()
+        // j.pushStack(v)
     });
 
     // lists
