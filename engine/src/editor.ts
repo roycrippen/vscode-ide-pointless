@@ -361,8 +361,8 @@ export function update() {
 
     const ctx = editor.joy.getStack();
     $("#context").empty();
-    for (var i = 0; i < ctx.Stack.length; i++) {
-        const s = ctx.Stack[i];
+    for (var i = 0; i < ctx.stack.length; i++) {
+        const s = ctx.stack[i];
         $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
     }
 
@@ -517,3 +517,4 @@ TODO:
 export interface CursorFn {
     (): string;
 }
+

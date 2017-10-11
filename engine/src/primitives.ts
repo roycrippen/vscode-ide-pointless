@@ -87,6 +87,8 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // arithmetic
+    j.primitive('numerical', (x: any) => { return typeof x === 'number' })
+
     j.primitive('+', (y: any, x: number) => {
         if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
             return String.fromCharCode(y.charCodeAt(0) + x);
@@ -111,7 +113,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     j.primitive('*', (y: number, x: number) => {
         if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '*' must be numbers");
+            j.pushError("operands for '*' must be numbers");
             return 0;
         }
         return y * x;
@@ -119,7 +121,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     j.primitive('/', (y: number, x: number) => {
         if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '/' must be numbers");
+            j.pushError("operands for '/' must be numbers");
             return 0;
         }
         if (x === 0) {
@@ -131,7 +133,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     j.primitive('rem', (y: number, x: number) => {
         if (!is2Numbers(x, y)) {
-            j.pushError("opperands for 'rem' must be numbers");
+            j.pushError("operands for 'rem' must be numbers");
             return;
         }
         j.pushStack(y % x);
@@ -151,18 +153,11 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('and', (y: any, x: any) => { j.pushStack(y && x) });
     j.primitive('or', (y: any, x: any) => { j.pushStack(y || x) });
     j.primitive('xor', (y: any, x: any) => { j.pushStack((y || x) && !(y && x)) });
-    j.primitive('iflist', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
-    // j.primitive('ifinteger', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 === 0) });
-    // j.primitive('iffloat', (x: number) => { j.pushStack(typeof x === 'number' && x % 1 !== 0) });
-    // j.primitive('ifstring', (x: string) => { j.pushStack(typeof x === 'string') });
+    j.primitive('list', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
     j.primitive('ifte', (x: any, p: any, q: any) => {
-        const contextCopy = j.getContext()
         j.run(x)
         const predicate = j.popStack()
-        j.setContext({ Stack: contextCopy })
         j.run(predicate ? p : q)
-        // const v = j.popStack()
-        // j.pushStack(v)
     });
 
     // lists

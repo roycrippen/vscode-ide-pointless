@@ -14,7 +14,7 @@ export class Joy {
     private errors: string[]
     private resultConsole: string
     private displayConsole: string
-    private context: { Stack: any[] }
+    private context: { stack: any[] }
     private defines: string[]
     public editor: e.Editor
 
@@ -24,23 +24,23 @@ export class Joy {
         this.errors = []
         this.resultConsole = ""
         this.displayConsole = ""
-        this.context = { Stack: [] }
+        this.context = { stack: [] }
         this.defines = []
         loadJoyPrimitives(this)
         loadCoreLibrary(this)
     }
 
     public getContext() {
-        let newStack = deepCopy(this.context.Stack)
+        let newStack = deepCopy(this.context.stack)
         return newStack
     }
 
-    public setContext(context: { Stack: any[] }) {
+    public setContext(context: { stack: any[] }) {
         this.context = context
     }
 
     public assertStack(length: number) {
-        if (this.context.Stack.length < length) {
+        if (this.context.stack.length < length) {
             this.errors.push('Stack underflow!');
         }
     }
@@ -186,8 +186,8 @@ export class Joy {
             for (let i = 0; i < quote.length; i += 1) {
                 const w = quote[i];
                 if (typeof w === 'function') w(j);
-                else if (w.kind === 'list') j.context.Stack.unshift(w);
-                else if (w.kind === 'literal') j.context.Stack.unshift(w.val);
+                else if (w.kind === 'list') j.context.stack.unshift(w);
+                else if (w.kind === 'literal') j.context.stack.unshift(w.val);
                 else j.errors.push(`Unexpected kind: ${w.kind}`);
             }
         };
@@ -276,16 +276,16 @@ export class Joy {
         const newWord: any = function (j: Joy) {
             const len = func.length;
             j.assertStack(len);
-            const args = j.context.Stack.slice(0, len).reverse(); // TODO: more efficient that slice/reverse
-            j.context.Stack = j.context.Stack.slice(len);
+            const args = j.context.stack.slice(0, len).reverse(); // TODO: more efficient that slice/reverse
+            j.context.stack = j.context.stack.slice(len);
             const result = func(...args);
             if (result !== undefined) {
                 if (result.kind === 'tuple') {
                     for (let i = 0; i < result.length; i += 1) {
-                        j.context.Stack.unshift(result[i]);
+                        j.context.stack.unshift(result[i]);
                     }
                 } else {
-                    j.context.Stack.unshift(result);
+                    j.context.stack.unshift(result);
                 }
             }
         };
@@ -296,21 +296,21 @@ export class Joy {
     };
 
     public reset = function () {
-        this.context = { Stack: [] };
+        this.context = { stack: [] };
     };
 
     public pushStack = function (val: any) {
-        if (val !== null && val !== undefined) this.context.Stack.unshift(val);
+        if (val !== null && val !== undefined) this.context.stack.unshift(val);
     };
 
     public peekStack = function () {
         this.assertStack(1);
-        return this.context.Stack[0];
+        return this.context.stack[0];
     };
 
     public popStack = function () {
         this.assertStack(1);
-        return this.context.Stack.shift();
+        return this.context.stack.shift();
     };
 
     public getStack = function () {
@@ -375,7 +375,7 @@ export class Joy {
                                 break;
                             }
                         }
-                        this.complieJoyDefines(s);
+                        this.compileJoyDefines(s);
                         break;
                     case ".":
                         this.execute(`${runCommand} .`)
@@ -394,3 +394,4 @@ export class Joy {
 export function deepCopy<T>(o: T): T {
     return JSON.parse(JSON.stringify(o));
 }
+
