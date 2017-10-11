@@ -30,6 +30,15 @@ export class Joy {
         loadCoreLibrary(this)
     }
 
+    public getContext() {
+        let newContext = Object.assign({}, this.context)
+        return newContext
+    }
+
+    public setContext(context: { Stack: any[] }) {
+        this.context = context
+    }
+
     public assertStack(length: number) {
         if (this.context.Stack.length < length) {
             this.errors.push('Stack underflow!');
