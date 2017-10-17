@@ -20,22 +20,11 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [list] rollup ifte ]                 "iflist"       define')
     j.execute('[ snoc pop ]                           "first"        define')
     j.execute('[ snoc swap pop ]                      "rest"         define')
+    j.execute('[ dup first swap rest]                 "uncons"       define')
     j.execute('[ swap cons ]                          "swons"        define')
     j.execute('[ [pop] dip ]                          "popd"         define')
     j.execute('[ [swons] step ]                       "shunt"        define')
     j.execute('[ [empty] [""] iflist swap shunt ]     "reverse"      define')
-    // j.execute('[  ]                      "i"      define')
-    // j.execute('[ dup i ]                              "x"          define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-
 
     // joy inilib
     j.execute('[ \"\n\" putch ]                            "newline"    define')
@@ -64,6 +53,17 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [[false] [true] ifte] cons ]              "negate"     define')
     j.execute('[ apply ]                                   "i"          define')
     j.execute('[ dup apply ]                               "x"          define')
+
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
+
 
 
 
