@@ -30,6 +30,19 @@ export function loadJoyPrimitives(j: Joy) {
         return ret;
     });
 
+    j.primitive('unstack', (xs: any) => {
+        if (typeof (xs) !== 'object' || xs.kind !== 'list') {
+            j.pushError('unstack requires a list');
+            return
+        }
+        while (j.stackLength() > 0) {
+            j.popStack()
+        }
+        for (let i = xs.length - 1; i >= 0; i -= 1) {
+            j.pushStack(xs[i])
+        }
+    })
+
     // stdout/stdin
     j.primitive('put', (x: any) => {
         switch (typeof (x)) {
@@ -163,6 +176,12 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // lists
+    j.primitive('empty', () => {
+        let emptyList: any = []
+        emptyList.kind = 'list'
+        return emptyList
+    })
+
     j.primitive('size', (x: any) => {
         x.length
     });
