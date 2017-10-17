@@ -154,7 +154,9 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('or', (y: any, x: any) => { j.pushStack(y || x) });
     j.primitive('xor', (y: any, x: any) => { j.pushStack((y || x) && !(y && x)) });
     j.primitive('list', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
+    j.primitive('numerical', (x: any) => { j.pushStack(typeof x === 'number') });
     j.primitive('ifte', (x: any, p: any, q: any) => {
+        j.execute('dup')
         j.run(x)
         const predicate = j.popStack()
         j.run(predicate ? p : q)

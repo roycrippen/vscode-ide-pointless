@@ -30,15 +30,6 @@ export class Joy {
         loadCoreLibrary(this)
     }
 
-    public getContext() {
-        let newStack = deepCopy(this.context.stack)
-        return newStack
-    }
-
-    public setContext(context: { stack: any[] }) {
-        this.context = context
-    }
-
     public assertStack(length: number) {
         if (this.context.stack.length < length) {
             this.errors.push('Stack underflow!');
