@@ -19,10 +19,16 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('pop', () => { j.popStack(); });
 
     j.primitive('dup', (x: any) => {
-        const ret: any = [x, x];
+        let xCopy = x;
+        if (typeof (x) === 'object') {
+            xCopy = deepCopy(x)
+            xCopy.kind = 'list'
+        }
+        const ret: any = [xCopy, x];
         ret.kind = 'tuple';
         return ret;
-    });
+
+    })
 
     j.primitive('swap', (y: any, x: any) => {
         const ret: any = [x, y];
@@ -153,7 +159,7 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // comparison
-    j.primitive('=', (y: any, x: any) => { j.pushStack(y === x) });
+    j.primitive('=', (y: any, x: any) => { j.pushStack(jsonEqual(x, y)) });
     j.primitive('<', (y: any, x: any) => { j.pushStack(y < x) });
     j.primitive('>', (y: any, x: any) => { j.pushStack(y > x) });
     j.primitive('<=', (y: any, x: any) => { j.pushStack(y <= x) });
@@ -428,4 +434,7 @@ export function loadJoyPrimitives(j: Joy) {
         return typeof x === 'number' && typeof y === 'number';
     }
 
-} // initialJoyprimitives
+    const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
+    const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
+
+} // initialJoyPrimitives
