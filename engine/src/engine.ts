@@ -36,6 +36,8 @@ export class Joy {
         }
     }
 
+    public stackLength() { return this.context.stack.length }
+
     // error display functions
     public pushError = function (errorText: string) {
         this.errors.push(errorText);
@@ -158,11 +160,6 @@ export class Joy {
                     break;
                 case ']':
                     return ast;
-                case '$':
-                case 'append':
-                case 'empty':
-                    this.pushError(`t = ${t}`);
-                    break;
                 default:
                     if (t !== undefined)
                         ast.push(this.word(t));
