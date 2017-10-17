@@ -4,12 +4,12 @@ import { Joy } from "./engine"
 export function loadCoreLibrary(j: Joy) {
 
     // core
-    j.execute('[ [ ] ifte ]                           "when"         define')
+    j.execute('[ [ ] ifte ]                                    define')
     j.execute('[ [ ] swap ifte ]                      "unless"       define')
     j.execute('[ [dup] dip ]                          "dupd"         define')
+    j.execute('[ [true] swap when ]                   "apply"        define')
     j.execute('[ [keep] dip apply ]                   "cleave"       define')
     j.execute('[ [swap] dip ]                         "swapd"        define')
-    j.execute('[ [true] swap when ]                   "apply"        define')
     j.execute('[ 0 swap - ]                           "neg"          define')
     j.execute('[ dup 0  [<] [neg] when ]              "abs"          define')
     j.execute('[ dupd dip ]                           "keep"         define')
@@ -37,8 +37,7 @@ export function loadCoreLibrary(j: Joy) {
     // j.execute('[  ]                      ""      define')
 
 
-    // keep these, move from pl-core to here 
-
+    // joy inilib
     j.execute('[ \"\n\" putch ]                            "newline"    define')
     j.execute('[ put newline ]                             "putln"      define')
     j.execute('[ \" \" putch ]                             "space"      define')
@@ -63,6 +62,9 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [[false] ifte] cons cons ]                "conjoin"    define')
     j.execute('[ [ifte] cons [true] swons cons ]           "disjoin"    define')
     j.execute('[ [[false] [true] ifte] cons ]              "negate"     define')
+    j.execute('[ apply ]                                   "i"          define')
+    j.execute('[ dup apply ]                               "x"          define')
+
 
 
     /* eliminated
