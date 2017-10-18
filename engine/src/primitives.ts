@@ -1,5 +1,6 @@
 import { Joy } from "./engine"
 import { update } from "./editor"
+import * as $ from "jquery";
 
 // load joy primitives into and instance of the engine
 export function loadJoyPrimitives(j: Joy) {
@@ -189,10 +190,15 @@ export function loadJoyPrimitives(j: Joy) {
     })
 
     j.primitive('size', (x: any) => {
-        x.length
+        if (typeof x !== 'object' && typeof x !== 'string') {
+            j.pushError("different type needed for size");
+            return 0;
+        }
+        return x.length
     });
 
-    j.primitive('cons', (x: any, xs: any) => {
+    j.primitive('cons', (x: any, _xs: any) => {
+        let xs: any = jCopy(_xs)
         if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
             return x + xs;
         }
@@ -322,7 +328,10 @@ export function loadJoyPrimitives(j: Joy) {
                         const x = xs[i];
                         j.pushStack(x.val);
                         j.run(q);
-                        if (j.popStack()) f.push(x);
+                        let b = j.popStack()
+                        if (b) {
+                            f.push(x);
+                        }
                     }
                     j.pushStack(f);
                 }
@@ -436,5 +445,10 @@ export function loadJoyPrimitives(j: Joy) {
 
     const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
     const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
+
+    const jCopy = ((obj: any) => {
+        let newObj = $.extend(true, [], obj)
+        return newObj
+    })
 
 } // initialJoyPrimitives
