@@ -7,9 +7,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     // used for testing new code
     j.primitive('aaa', () => {
-        let source = "";
 
-        j.processJoySource(source);
 
     });
 
@@ -22,8 +20,8 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('dup', (x: any) => {
         let xCopy = x;
         if (typeof (x) === 'object') {
-            xCopy = deepCopy(x)
-            xCopy.kind = 'list'
+            xCopy = jCopy(x)
+            // xCopy.kind = 'list'
         }
         const ret: any = [xCopy, x];
         ret.kind = 'tuple';
@@ -220,7 +218,8 @@ export function loadJoyPrimitives(j: Joy) {
             return xs;
         }
         const x = xs.shift();
-        j.pushStack(x.val);
+        // j.pushStack(x.val);
+        j.pushStack(x);
         return xs;
     });
 
@@ -443,7 +442,7 @@ export function loadJoyPrimitives(j: Joy) {
         return typeof x === 'number' && typeof y === 'number';
     }
 
-    const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
+    // const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
     const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
 
     const jCopy = ((obj: any) => {

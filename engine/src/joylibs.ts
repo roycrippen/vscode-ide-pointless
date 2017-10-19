@@ -115,6 +115,7 @@ export function loadCoreLibrary(j: Joy) {
             const key: string = defs[i].trim().slice(0, defs[i].indexOf('=='))
             const value = defs[i].trim()
             $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
+            // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
         }
     });
 

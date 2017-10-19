@@ -53,6 +53,8 @@ export function activate(context: vscode.ExtensionContext) {
     //         // provider.update(joyEditorUri);
     //     }
     // });
+
+
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 }
 

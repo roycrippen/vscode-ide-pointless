@@ -21,6 +21,12 @@ export class Editor {
         this.selection = { from: null, to: null };
     }
 
+    deleteAll = (() => {
+        this.root = { type: "Nil" };
+        this.cursor = this.root;
+        this.selection = { from: null, to: null };
+    })
+
     Root = function () {
         return this.root;
     };
@@ -194,6 +200,27 @@ export class Editor {
             }
         }
     };
+
+    loadSource = function (source: string) {
+        let tokens = this.joy.lex(source)
+        // this.deleteAll()
+        for (let i = 0; i < tokens.length; i += 1) {
+            let token = tokens[i]
+            switch (token) {
+                case '[':
+                    this.InsertList()
+                    break;
+                case ']':
+                    this.MoveNext(false, true, false)
+                    break;
+                default:
+                    this.InsertWord(token)
+            }
+        }
+        update()
+    }
+
+
 } // Editor
 
 // Render
@@ -350,14 +377,9 @@ export function update() {
     let root = editor.Root();
     let cursor = editor.Cursor();
     var c = code(root, cursor);
-    // var c = code(editor.Root(), editor.Cursor());
     $("#output").empty().append(c);
     editor.joy.reset();
-    if (c.trim() == "words") {
-        editor.joy.execute(c);
-    } else {
-        editor.joy.execute(c);
-    }
+    editor.joy.execute(c);
 
     const ctx = editor.joy.getStack();
     $("#context").empty();
@@ -367,8 +389,10 @@ export function update() {
     }
 
     const results = editor.joy.getResultConsole();
-    $("#result").empty();
-    $("#result").append("<div class='stack'/>").append(results);
+    let r = $("#result")
+    r.empty();
+    r.append("<div class='stack'/>").append(results);
+    r.scrollTop(r.prop("scrollHeight"));
 
     const display = editor.joy.getDisplayConsole();
     $("#display").empty();
@@ -504,6 +528,81 @@ $(document).keypress(function (e) {
 $(document).ready(function () {
     update();
 });
+
+$(document).click(function (e) {
+    let target = $(e.target)
+    if (target.is('#sourceBtn')) {
+        let source = $('#dropdown-search').val()
+        let _source = ''
+        switch (typeof source) {
+            case 'object':
+            case 'undefined':
+                return
+            case 'number':
+                _source = source == undefined ? '' : source.toString()
+                break
+            default:
+                _source = typeof source == 'string' ? source : ''
+        }
+
+        let idx = _source.indexOf('==')
+        if (idx != -1) {
+            _source = _source.substr(idx + 2)
+            editor.loadSource(_source)
+        }
+    }
+})
+
+// $(document).dblclick(() => {
+
+
+//     // let a = $("#dropdown-dictionary")[0].getElementsByClassName('drop-element')
+//     let a = $("#dropdown-dictionary")[0].getElementsByTagName('option')
+//     if (a.length < 1) {
+//         console.log('no elements found on double click')
+//         return
+//     }
+
+//     let source: string = ''
+//     let target: any = $("#dropdown-search")[0].textContent
+//     if (target === 'null') { return }
+//     let idx = target.indexOf('#')
+//     if (idx < 0) { return }
+//     let _target: string = target.substr(idx, target.length)
+//     console.log('_target = ' + _target)
+
+//     for (let i = 0; i < a.length; i++) {
+//         let val = a[i].getAttributeNode('href').value.trim()
+//         console.log('href = ' + val)
+//         if (_target === val) {
+//             source = a[i].innerHTML
+//             break;
+//         }
+//     }
+//     if (source !== '') {
+//         console.log('source = ' + source)
+//         $("#dropdown-search").val(source)
+//     }
+
+// })
+
+// function dictionaryDblClick() {
+//     let a = $("#dropdown-dictionary")[0].children
+//     let source = ''
+//     for (i = 0; i < a.length; i++) {
+//         if (a[i].baseURI === a[i].href) {
+//             source = a[i].innerText
+//             break;
+//         }
+//     }
+//     if (source !== '') {
+//         console.log('source = ' + source)
+//         $("#dropdown-search").val(source)
+//     }
+// }
+
+
+
 
 /*
 - Not allowing definitions containing literal values
