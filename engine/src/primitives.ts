@@ -204,7 +204,7 @@ export function loadJoyPrimitives(j: Joy) {
                 }
                 return x + _xs
             case 'object':
-                if (!(typeof _xs === 'object' && _xs.kind === 'list')) {
+                if (_xs.kind !== 'list') {
                     j.pushError("second argument for 'cons' must be a list/quotation");
                     return _xs;
                 }
@@ -215,15 +215,10 @@ export function loadJoyPrimitives(j: Joy) {
                     xs.unshift(x);
                 }
                 return xs;
-
             default:
                 j.pushError("second argument for 'cons' must be a list/quotation");
                 return _xs;
-
-
         }
-
-
     });
 
     j.primitive('snoc', (xs: any) => {
