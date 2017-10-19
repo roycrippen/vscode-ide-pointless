@@ -531,7 +531,7 @@ $(document).ready(function () {
 
 $(document).click(function (e) {
     let target = $(e.target)
-    if (target.is('#sourceBtn')) {
+    if (target.is('#source-button')) {
         let source = $('#dropdown-search').val()
         let _source = ''
         switch (typeof source) {

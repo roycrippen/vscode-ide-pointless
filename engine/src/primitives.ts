@@ -200,11 +200,15 @@ export function loadJoyPrimitives(j: Joy) {
         if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
             return x + xs;
         }
-        if ((typeof x === 'object' && x.kind !== 'list') || !(typeof xs === 'object' && xs.kind === 'list')) {
-            j.pushError("arguments for 'cons' must be a literal followed by a list/quotation");
+        if (!(typeof xs === 'object' && xs.kind === 'list')) {
+            j.pushError("second argument for 'cons' must be a list/quotation");
             return xs;
         }
-        xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+        if (typeof x == 'number') {
+            xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+        } else {
+            xs.unshift(x);
+        }
         return xs;
     });
 
@@ -218,7 +222,6 @@ export function loadJoyPrimitives(j: Joy) {
             return xs;
         }
         const x = xs.shift();
-        // j.pushStack(x.val);
         j.pushStack(x);
         return xs;
     });
