@@ -196,20 +196,34 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     j.primitive('cons', (x: any, _xs: any) => {
-        let xs: any = jCopy(_xs)
-        if (typeof x === 'string' && x.length === 1 && typeof xs === 'string') {
-            return x + xs;
+        switch (typeof _xs) {
+            case 'string':
+                if (!(typeof x === 'string' && x.length === 1)) {
+                    j.pushError("first argument for 'cons' string must be a single character")
+                    return _xs
+                }
+                return x + _xs
+            case 'object':
+                if (!(typeof _xs === 'object' && _xs.kind === 'list')) {
+                    j.pushError("second argument for 'cons' must be a list/quotation");
+                    return _xs;
+                }
+                let xs: any = jCopy(_xs)
+                if (typeof x == 'number') {
+                    xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+                } else {
+                    xs.unshift(x);
+                }
+                return xs;
+
+            default:
+                j.pushError("second argument for 'cons' must be a list/quotation");
+                return _xs;
+
+
         }
-        if (!(typeof xs === 'object' && xs.kind === 'list')) {
-            j.pushError("second argument for 'cons' must be a list/quotation");
-            return xs;
-        }
-        if (typeof x == 'number') {
-            xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
-        } else {
-            xs.unshift(x);
-        }
-        return xs;
+
+
     });
 
     j.primitive('snoc', (xs: any) => {
