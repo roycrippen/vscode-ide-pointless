@@ -55,8 +55,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ apply ]                                            "i"          define')
     j.execute('[ dup apply ]                                        "x"          define')
     j.execute('[ [ ] cons i ]                                       "call"       define')
-    j.execute(`[ swap [=] cons filter size [1 >=] 
-                 [true] [false] ifte empty cons unstack]            "in"         define`)
+    j.execute(`[ swap [=] cons filter size [1 >=]
+                   [true] [false] ifte swap pop ]                   "in"         define`)
 
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
