@@ -549,6 +549,7 @@ $(document).click(function (e) {
         if (idx != -1) {
             _source = _source.substr(idx + 2)
             editor.loadSource(_source)
+            token = ''
         }
     }
 })
