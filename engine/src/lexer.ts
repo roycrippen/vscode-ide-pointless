@@ -69,7 +69,7 @@ export class Lexer {
             case '\'':
                 return this.quotedString(c);
             case '.':
-                return Token.DOT;
+                return Token.DOT
             default:
                 return this.identifier();
         }
@@ -151,10 +151,14 @@ export class Lexer {
 
 
     private identifier(): Token {
-        this.matchWhile(c => isAlphaNum(c) || c == '_' || c == '-');
-        this.setValue();
-        this._keyword = keywords[this._value!];
-        return this._keyword ? this._keyword : Token.STRING;
+        this.matchWhile(c => isAlphaNum(c) || c == '_' || c == '-')
+        if (this.src[this.si] == '.' && !isWhite(this.src[this.si + 1])) {
+            this.si++
+            this.matchWhile(c => isDigit(c))
+        }
+        this.setValue()
+        this._keyword = keywords[this._value!]
+        return this._keyword ? this._keyword : Token.STRING
     }
 
     private matchChar(c: string): boolean {
