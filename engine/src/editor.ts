@@ -548,9 +548,9 @@ $(document).click(function (e) {
         let idx = _source.indexOf('==')
         if (idx != -1) {
             _source = _source.substr(idx + 2)
-            editor.loadSource(_source)
-            token = ''
         }
+        editor.loadSource(_source)
+        token = ''
     }
 })
 

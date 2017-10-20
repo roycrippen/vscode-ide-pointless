@@ -116,48 +116,10 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // arithmetic
-    j.primitive('+', (y: any, x: number) => {
-        return evalNumeric('+', y, x)
-        // if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
-        //     return String.fromCharCode(y.charCodeAt(0) + x);
-        // }
-        // if (!is2Numbers(x, y)) {
-        //     j.pushError("opperands for '+' must be numbers");
-        //     return 0;
-        // }
-        // return y + x;
-    });
-
-    j.primitive('-', (y: any, x: number) => {
-        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
-            return String.fromCharCode(y.charCodeAt(0) - x);
-        }
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '-' must be numbers");
-            return 0;
-        }
-        return y - x;
-    });
-
-    j.primitive('*', (y: number, x: number) => {
-        if (!is2Numbers(x, y)) {
-            j.pushError("operands for '*' must be numbers");
-            return 0;
-        }
-        return y * x;
-    });
-
-    j.primitive('/', (y: number, x: number) => {
-        if (!is2Numbers(x, y)) {
-            j.pushError("operands for '/' must be numbers");
-            return 0;
-        }
-        if (x === 0) {
-            j.pushError("divisor for '/' must not be 0");
-            return 0;
-        }
-        return y / x;
-    });
+    j.primitive('+', (y: any, x: number) => { return evalNumeric('+', y, x) });
+    j.primitive('-', (y: any, x: number) => { return evalNumeric('-', y, x) });
+    j.primitive('*', (y: any, x: number) => { return evalNumeric('*', y, x) });
+    j.primitive('/', (y: any, x: number) => { return evalNumeric('/', y, x) });
 
     j.primitive('rem', (y: number, x: number) => {
         if (!is2Numbers(x, y)) {
