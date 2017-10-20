@@ -161,8 +161,10 @@ export class Joy {
                 case ']':
                     return ast;
                 default:
-                    if (t !== undefined)
-                        ast.push(this.word(t));
+                    if (t !== undefined) {
+                        let w = this.word(t)
+                        ast.push(w);
+                    }
                     break;
             }
         }
@@ -227,6 +229,13 @@ export class Joy {
         const c: any = this.compile(quote);
         c.kind = 'secondary';
         c.disp = name;
+
+        if (name === 'calc') {
+            quote[2][1][0][0] = c
+            console.log('aaa');
+
+        }
+
         this.dictionary[name] = c;
     }
 
