@@ -479,7 +479,11 @@ export function loadJoyPrimitives(j: Joy) {
     })
 
     const evalLogical = ((op: string, y: any, x: any) => {
-        if (!isLiteral(y) && !isLiteral(x) && !typesMatch(y, x)) {
+        if (op == '=' && typeof y == 'function' && typeof x == 'function') {
+            return y.disp == x.disp
+        }
+
+        if (!isLiteral(y) || !isLiteral(x) || !typesMatch(y, x)) {
             j.pushError("types not valid for " + op);
             return
         }
