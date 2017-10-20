@@ -4,59 +4,80 @@ import { Joy } from "./engine"
 export function loadCoreLibrary(j: Joy) {
 
     // core
-    j.execute('[ [ ] ifte ]                           "when"         define')
-    j.execute('[ [ ] swap ifte ]                      "unless"       define')
-    j.execute('[ [dup] dip ]                          "dupd"         define')
-    j.execute('[ [true] swap when ]                   "apply"        define')
-    j.execute('[ [keep] dip apply ]                   "cleave"       define')
-    j.execute('[ [swap] dip ]                         "swapd"        define')
-    j.execute('[ 0 swap - ]                           "neg"          define')
-    j.execute('[ dup 0  [<] [neg] when ]              "abs"          define')
-    j.execute('[ dupd dip ]                           "keep"         define')
-    j.execute('[ pop pop ]                            "pop2"         define')
-    j.execute('[ pop pop pop ]                        "pop3"         define')
-    j.execute('[ swapd swap ]                         "rolldown"     define')
-    j.execute('[ rolldown rolldown ]                  "rollup"       define')
-    j.execute('[ [list] rollup ifte ]                 "iflist"       define')
-    j.execute('[ snoc pop ]                           "first"        define')
-    j.execute('[ snoc swap pop ]                      "rest"         define')
-    j.execute('[ dup first swap rest]                 "uncons"       define')
-    j.execute('[ uncons swap ]                        "unswons"      define')
-    j.execute('[ swap cons ]                          "swons"        define')
-    j.execute('[ [pop] dip ]                          "popd"         define')
-    j.execute('[ [swons] step ]                       "shunt"        define')
-    j.execute('[ [empty] [""] iflist swap shunt ]     "reverse"      define')
+    j.execute('[ [ ] ifte ]                                                       "when"         define')
+    j.execute('[ [ ] swap ifte ]                                                  "unless"       define')
+    j.execute('[ [dup] dip ]                                                      "dupd"         define')
+    j.execute('[ [true] swap when ]                                               "apply"        define')
+    j.execute('[ [keep] dip apply ]                                               "cleave"       define')
+    j.execute('[ [swap] dip ]                                                     "swapd"        define')
+    j.execute('[ 0 swap - ]                                                       "neg"          define')
+    j.execute('[ dup 0  [<] [neg] when ]                                          "abs"          define')
+    j.execute('[ dupd dip ]                                                       "keep"         define')
+    j.execute('[ pop pop ]                                                        "pop2"         define')
+    j.execute('[ pop pop pop ]                                                    "pop3"         define')
+    j.execute('[ swapd swap ]                                                     "rolldown"     define')
+    j.execute('[ rolldown rolldown ]                                              "rollup"       define')
+    j.execute('[ [list] rollup ifte ]                                             "iflist"       define')
+    j.execute('[ snoc pop ]                                                       "first"        define')
+    j.execute('[ snoc swap pop ]                                                  "rest"         define')
+    j.execute('[ dup first swap rest]                                             "uncons"       define')
+    j.execute('[ uncons swap ]                                                    "unswons"      define')
+    j.execute('[ swap cons ]                                                      "swons"        define')
+    j.execute('[ [pop] dip ]                                                      "popd"         define')
+    j.execute('[ [swons] step ]                                                   "shunt"        define')
+    j.execute('[ [empty] [""] iflist swap shunt ]                                 "reverse"      define')
 
     // joy inilib
-    j.execute('[ \"\n\" putch ]                                     "newline"    define')
-    j.execute('[ put newline ]                                      "putln"      define')
-    j.execute('[ \" \" putch ]                                      "space"      define')
-    j.execute('[ [putch] step ]                                     "putchars"   define')
-    j.execute('[ [putchars] step ]                                  "putstrings" define')
-    j.execute('[ dupd dup swapd  ]                                  "dup2"       define')
-    j.execute('[ [pop true] swap ifte ]                             "sequor"     define')
-    j.execute('[ [pop false] ifte ]                                 "sequand"    define')
-    j.execute('[  [dip] cons dip ]                                  "dipd"       define')
-    j.execute('[  [dip] cons dip ]                                  "dip2"       define')
-    j.execute('[ [dip2] cons dip ]                                  "dip3"       define')
-    j.execute('[ [] unstack ]                                       "newstack"   define')
-    j.execute('[ true ]                                             "truth"      define')
-    j.execute('[ false ]                                            "falsity"    define')
-    j.execute('[ ["a" >=] [32 -] [ ] ifte ]                         "to-upper"   define')
-    j.execute('[ ["a" < ] [32 +] [ ] ifte ]                         "to-lower"   define')
-    j.execute('[ swap concat ]                                      "swoncat"    define')
+    j.execute('[ \"\n\" putch ]                                                   "newline"      define')
+    j.execute('[ put newline ]                                                    "putln"        define')
+    j.execute('[ \" \" putch ]                                                    "space"        define')
+    j.execute('[ [putch] step ]                                                   "putchars"     define')
+    j.execute('[ [putchars] step ]                                                "putstrings"   define')
+    j.execute('[ dupd dup swapd  ]                                                "dup2"         define')
+    j.execute('[ [pop true] swap ifte ]                                           "sequor"       define')
+    j.execute('[ [pop false] ifte ]                                               "sequand"      define')
+    j.execute('[  [dip] cons dip ]                                                "dipd"         define')
+    j.execute('[  [dip] cons dip ]                                                "dip2"         define')
+    j.execute('[ [dip2] cons dip ]                                                "dip3"         define')
+    j.execute('[ [] unstack ]                                                     "newstack"     define')
+    j.execute('[ true ]                                                           "truth"        define')
+    j.execute('[ false ]                                                          "falsity"      define')
+    j.execute('[ ["a" >=] [32 -] [ ] ifte ]                                       "to-upper"     define')
+    j.execute('[ ["a" < ] [32 +] [ ] ifte ]                                       "to-lower"     define')
+    j.execute('[ swap concat ]                                                    "swoncat"      define')
+    j.execute('[ [[false] ifte] cons cons ]                                       "conjoin"      define')
+    j.execute('[ [ifte] cons [true] swons cons ]                                  "disjoin"      define')
+    j.execute('[ [[false] [true] ifte] cons ]                                     "negate"       define')
+    j.execute('[ apply ]                                                          "i"            define')
+    j.execute('[ dup apply ]                                                      "x"            define')
+    j.execute('[ [ ] cons i ]                                                     "call"         define')
+    j.execute(`[ swap [=] cons filter size [1 >=] [true] [false] ifte swap pop ]  "in"           define`)
+
     j.execute(`[ "Monday" "Tuesday" "Wednesday" "Thursday"          
-                 "Friday" "Saturday" "Sunday" ]                     "weekdays"   define`)
+    "Friday" "Saturday" "Sunday" ]                     "weekdays"     define`)
     j.execute(`[ "JAN" "FEB" "MAR" "APR" "MAY" "JUN"         
-                 "JUL" "AUG" "SEP" "OCT" "NOV" "DEC" ]              "months"     define`)
-    j.execute('[ [[false] ifte] cons cons ]                         "conjoin"    define')
-    j.execute('[ [ifte] cons [true] swons cons ]                    "disjoin"    define')
-    j.execute('[ [[false] [true] ifte] cons ]                       "negate"     define')
-    j.execute('[ apply ]                                            "i"          define')
-    j.execute('[ dup apply ]                                        "x"          define')
-    j.execute('[ [ ] cons i ]                                       "call"       define')
-    j.execute(`[ swap [=] cons filter size [1 >=]
-                   [true] [false] ifte swap pop ]                   "in"         define`)
+    "JUL" "AUG" "SEP" "OCT" "NOV" "DEC" ]              "months"       define`)
+    j.execute(` 
+                [ 
+                    [ numerical ]
+                    [ ]
+                    [ unswons [ [calc] map uncons first ] dip call ]
+                    ifte
+                ] "calc" define`)
+
+    // this one below fails 'in' tries to execute = - * / rather than test for it 
+    // j.execute(` 
+    // [ 
+    //     [ numerical ]
+    //     [ ]
+    //     [ unswons
+    //         [ dup [+ - * /] in ]
+    //         [ [ [calc] map uncons first ] dip
+    //             call ]
+    //         [ "bad operator\n" put ]
+    //         ifte ]
+    //     ifte
+    // ] "calc" define`)
 
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
