@@ -42,8 +42,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [] unstack ]                                       "newstack"   define')
     j.execute('[ true ]                                             "truth"      define')
     j.execute('[ false ]                                            "falsity"    define')
-    j.execute('[ [dup "a" >=] [32 -] [ ] ifte ]                     "to-upper"   define')
-    j.execute('[ [dup "a" < ] [32 +] [ ] ifte ]                     "to-lower"   define')
+    j.execute('[ ["a" >=] [32 -] [ ] ifte ]                         "to-upper"   define')
+    j.execute('[ ["a" < ] [32 +] [ ] ifte ]                         "to-lower"   define')
     j.execute('[ swap concat ]                                      "swoncat"    define')
     j.execute(`[ "Monday" "Tuesday" "Wednesday" "Thursday"          
                  "Friday" "Saturday" "Sunday" ]                     "weekdays"   define`)

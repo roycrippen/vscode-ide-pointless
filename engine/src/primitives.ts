@@ -21,7 +21,6 @@ export function loadJoyPrimitives(j: Joy) {
         let xCopy = x;
         if (typeof (x) === 'object') {
             xCopy = jCopy(x)
-            // xCopy.kind = 'list'
         }
         const ret: any = [xCopy, x];
         ret.kind = 'tuple';
@@ -46,6 +45,18 @@ export function loadJoyPrimitives(j: Joy) {
         for (let i = xs.length - 1; i >= 0; i -= 1) {
             j.pushStack(xs[i])
         }
+    })
+
+    j.primitive('stack', () => {
+        let list: any = []
+        list.kind = 'list'
+        while (j.stackLength() > 0) {
+            list.push(j.popStack())
+        }
+        for (let i = list.length - 1; i >= 0; i -= 1) {
+            j.pushStack(list[i])
+        }
+        j.pushStack(list)
     })
 
     // stdout/stdin
@@ -105,17 +116,16 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // arithmetic
-    j.primitive('numerical', (x: any) => { return typeof x === 'number' })
-
     j.primitive('+', (y: any, x: number) => {
-        if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
-            return String.fromCharCode(y.charCodeAt(0) + x);
-        }
-        if (!is2Numbers(x, y)) {
-            j.pushError("opperands for '+' must be numbers");
-            return 0;
-        }
-        return y + x;
+        return evalNumeric('+', y, x)
+        // if (typeof y === 'string' && y.length === 1 && typeof x === 'number') {
+        //     return String.fromCharCode(y.charCodeAt(0) + x);
+        // }
+        // if (!is2Numbers(x, y)) {
+        //     j.pushError("opperands for '+' must be numbers");
+        //     return 0;
+        // }
+        // return y + x;
     });
 
     j.primitive('-', (y: any, x: number) => {
@@ -158,26 +168,35 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // comparison
-    j.primitive('=', (y: any, x: any) => { j.pushStack(jsonEqual(x, y)) });
-    j.primitive('<', (y: any, x: any) => { j.pushStack(y < x) });
-    j.primitive('>', (y: any, x: any) => { j.pushStack(y > x) });
-    j.primitive('<=', (y: any, x: any) => { j.pushStack(y <= x) });
-    j.primitive('>=', (y: any, x: any) => { j.pushStack(y >= x) });
+    j.primitive('=', (y: any, x: any) => { return evalLogical('=', y, x) });
+    j.primitive('<', (y: any, x: any) => { return evalLogical('<', y, x) });
+    j.primitive('>', (y: any, x: any) => { return evalLogical('>', y, x) });
+    j.primitive('<=', (y: any, x: any) => { return evalLogical('<=', y, x) });
+    j.primitive('>=', (y: any, x: any) => { return evalLogical('>=', y, x) });
+    j.primitive('numerical', (x: any) => { return typeof x === 'number' })
 
     // boolean/conditional
-    j.primitive('true', () => { j.pushStack(true) });
-    j.primitive('false', () => { j.pushStack(false) });
+    j.primitive('true', () => { return true });
+    j.primitive('false', () => { return false });
+
+    // need type checks for not, and, or, xor
     j.primitive('not', (x: any) => { j.pushStack(!x) });
     j.primitive('and', (y: any, x: any) => { j.pushStack(y && x) });
     j.primitive('or', (y: any, x: any) => { j.pushStack(y || x) });
     j.primitive('xor', (y: any, x: any) => { j.pushStack((y || x) && !(y && x)) });
+
     j.primitive('list', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
     j.primitive('numerical', (x: any) => { j.pushStack(typeof x === 'number') });
     j.primitive('ifte', (x: any, p: any, q: any) => {
-        j.execute('dup')
+        j.execute('stack')
+        let oldStackList: any = j.popStack()
         j.run(x)
         const predicate = j.popStack()
+        j.pushStack(oldStackList)
+        j.execute('unstack')
         j.run(predicate ? p : q)
+        let result = j.popStack()
+        return result
     });
 
     // lists
@@ -195,29 +214,30 @@ export function loadJoyPrimitives(j: Joy) {
         return x.length
     });
 
-    j.primitive('cons', (x: any, _xs: any) => {
-        switch (typeof _xs) {
+    j.primitive('cons', (x: any, xs: any) => {
+        switch (typeof xs) {
             case 'string':
                 if (!(typeof x === 'string' && x.length === 1)) {
                     j.pushError("first argument for 'cons' string must be a single character")
-                    return _xs
+                    return xs
                 }
-                return x + _xs
+                return x + xs
             case 'object':
-                if (_xs.kind !== 'list') {
+                if (xs.kind !== 'list') {
                     j.pushError("second argument for 'cons' must be a list/quotation");
-                    return _xs;
+                    return xs;
                 }
-                let xs: any = jCopy(_xs)
-                if (typeof x == 'number') {
-                    xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+                let _xs: any = jCopy(xs)
+                if (typeof x == 'number' || typeof x == 'boolean' || typeof x == 'string') {
+                    _xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
                 } else {
-                    xs.unshift(x);
+                    let _x: any = jCopy(x)
+                    _xs.unshift(_x);
                 }
-                return xs;
+                return _xs;
             default:
                 j.pushError("second argument for 'cons' must be a list/quotation");
-                return _xs;
+                return xs;
         }
     });
 
@@ -236,21 +256,25 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     j.primitive('concat', (xs: any, ys: any) => {
+        if (isLiteral(xs)) xs = getLiteral(xs)
+        if (isLiteral(ys)) ys = getLiteral(ys)
+
         if (typeof xs !== typeof ys) {
             j.pushError("arguments for 'concat' must be the same type");
-            return xs;
+            return
         }
         if (typeof xs === 'string' && typeof ys === 'string') {
             return xs.concat(ys);
         }
         if (xs.kind !== 'list' || ys.kind !== 'list') {
             j.pushError("arguments for 'concat' must be a lists and/or quotations");
-            return xs;
+            return
         }
+
         for (let i = 0; i < ys.length; i += 1) {
             xs.push(ys[i]);
         }
-        return xs;
+        return xs
     });
 
     j.primitive('range', (y: number, x: number) => {
@@ -263,23 +287,25 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     j.primitive('step', (xs: any, q: any) => {
-        if (q === undefined) {
+        if (q === undefined || typeof q !== 'object' || q.kind !== 'list') {
             j.pushError("second argument of 'step' must be a quotation")
             return
         }
-        const xsCopy = xs
+        const xsCopy = jCopy(xs)
         switch (typeof xs) {
             case 'string':
                 for (let i = 0; i < xs.length; i += 1) {
                     j.pushStack(xs[i])
-                    j.run(q)
+                    let _q = jCopy(q)
+                    j.run(_q)
                 }
                 break
             case 'object':
                 if (xs.kind === 'list') {
                     for (let i = 0; i < xs.length; i += 1) {
                         j.pushStack(xsCopy[i].val)
-                        j.run(q)
+                        let _q = jCopy(q)
+                        j.run(_q)
                     }
                 }
                 break;
@@ -289,30 +315,28 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     j.primitive('map', (xs: any, q: any) => {
-        let ys = ''
-        const xsCopy = xs
         switch (typeof xs) {
             case 'string':
+                let ys = ''
                 for (let i = 0; i < xs.length; i += 1) {
                     j.pushStack(xs[i])
-                    j.run(q)
-                    j.assertStack(1)
-                    const v = j.popStack()
-                    ys += v
+                    let _q = jCopy(q)
+                    j.run(_q)
+                    ys += j.popStack()
                 }
-                j.pushStack(ys)
-                break
+                return ys
             case 'object':
+                let _xs: any = []
+                _xs.kind = 'list'
                 if (xs.kind === 'list') {
                     for (let i = 0; i < xs.length; i += 1) {
-                        j.pushStack(xsCopy[i].val)
-                        j.run(q)
+                        j.pushStack(jCopy(xs[i]))
+                        let _q = jCopy(q)
+                        j.run(_q)
                         j.assertStack(1)
-                        const v = j.popStack()
-                        xsCopy[i].val = v
-                        xsCopy[i].disp = v.toString()
+                        _xs.push(j.popStack())
                     }
-                    j.pushStack(xs)
+                    return _xs
                 }
                 break;
             default:
@@ -325,26 +349,28 @@ export function loadJoyPrimitives(j: Joy) {
         switch (typeof xs) {
             case 'string':
                 for (let i = 0; i < xs.length; i += 1) {
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    if (j.popStack()) ys += xs[i];
+                    j.pushStack(xs[i])
+                    let _q = jCopy(q)
+                    j.run(_q)
+                    if (j.popStack()) {
+                        ys += xs[i]
+                    }
                 }
-                j.pushStack(ys);
-                break;
+                return ys;
             case 'object':
                 if (xs.kind === 'list') {
-                    const f: any = [];
-                    f.kind = 'list';
+                    const f: any = []
+                    f.kind = 'list'
                     for (let i = 0; i < xs.length; i += 1) {
-                        const x = xs[i];
-                        j.pushStack(x.val);
-                        j.run(q);
-                        let b = j.popStack()
-                        if (b) {
-                            f.push(x);
+                        const x = jCopy(xs[i])
+                        j.pushStack(x)
+                        let _q = jCopy(q)
+                        j.run(_q)
+                        if (j.popStack()) {
+                            f.push(x)
                         }
                     }
-                    j.pushStack(f);
+                    return f
                 }
                 break;
             default:
@@ -352,29 +378,25 @@ export function loadJoyPrimitives(j: Joy) {
         }
     });
 
-    j.primitive('fold', (xs: any, b: any, q: any) => {
-        let a = b;
+    j.primitive('fold', (xs: any, a: any, q: any) => {
         switch (typeof xs) {
             case 'string':
-                for (let i = 0; i < xs.length; i += 1) {
-                    j.pushStack(a);
-                    j.pushStack(xs[i]);
-                    j.run(q);
-                    j.assertStack(1)
-                    a = j.popStack();
-                }
                 j.pushStack(a);
-                break;
+                for (let i = 0; i < xs.length; i += 1) {
+                    j.pushStack(xs[i]);
+                    let _q = jCopy(q)
+                    j.run(_q)
+                }
+                return j.popStack();
             case 'object':
                 if (xs.kind === 'list') {
-                    for (let i = 0; i < xs.length; i += 1) {
-                        j.pushStack(a);
-                        j.pushStack(xs[i].val);
-                        j.run(q);
-                        j.assertStack(1)
-                        a = j.popStack();
-                    }
                     j.pushStack(a);
+                    for (let i = 0; i < xs.length; i += 1) {
+                        j.pushStack(jCopy(xs[i]));
+                        let _q = jCopy(q)
+                        j.run(_q)
+                    }
+                    return j.popStack();
                 }
                 break;
             default:
@@ -455,11 +477,113 @@ export function loadJoyPrimitives(j: Joy) {
     }
 
     // const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
-    const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
+    // const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
 
     const jCopy = ((obj: any) => {
-        let newObj = $.extend(true, [], obj)
-        return newObj
+        switch (typeof obj) {
+            case 'object':
+                let newObj = $.extend(true, [], obj)
+                return newObj
+            default:
+                return obj
+        }
     })
+
+    const isLiteral = ((obj: any) => {
+        switch (typeof obj) {
+            case 'string':
+            case 'number':
+            case 'boolean':
+                return true
+            case 'object':
+                if (obj.kind === 'literal') {
+                    return true
+                }
+                return false
+            default:
+                return false
+        }
+    })
+
+    const getLiteral = ((obj: any) => {
+        if (typeof obj === 'object') {
+            return obj.val
+        }
+        return obj
+    })
+
+    const typesMatch = ((y: any, x: any) => {
+        return typeof y === typeof x
+    })
+
+    const evalLogical = ((op: string, y: any, x: any) => {
+        if (!isLiteral(y) && !isLiteral(x) && !typesMatch(y, x)) {
+            j.pushError("types not valid for " + op);
+            return
+        }
+        let result = false;
+        switch (op) {
+            case '=':
+                result = getLiteral(y) == getLiteral(x)
+                break
+            case '>':
+                result = getLiteral(y) > getLiteral(x)
+                break
+            case '>=':
+                result = getLiteral(y) >= getLiteral(x)
+                break
+            case '<':
+                result = getLiteral(y) < getLiteral(x)
+                break
+            case '<+':
+                result = getLiteral(y) <= getLiteral(x)
+                break
+            default:
+                j.pushError("invalid logical operator " + op);
+                return
+        }
+        return result
+    })
+
+    const evalNumeric = ((op: string, y: any, x: any) => {
+        if (!isLiteral(y) && !isLiteral(x)) {
+            j.pushError("types not valid for " + op);
+            return
+        }
+
+        let _y = getLiteral(y)
+        let _x = getLiteral(x)
+
+        // if (!is2Numbers(_y, _x) || !(typeof _y === 'string' && _y.length === 1 && typeof _x === 'number')) {
+        //     j.pushError("types not valid for " + op);
+        //     return
+        // }
+
+        switch (op) {
+            case '+':
+                if (typeof _y === 'string' && _y.length === 1 && typeof _x === 'number') {
+                    return String.fromCharCode(_y.charCodeAt(0) + _x)
+                }
+                return _y + _x
+            case '-':
+                if (typeof _y === 'string' && _y.length === 1 && typeof _x === 'number') {
+                    return String.fromCharCode(_y.charCodeAt(0) - _x)
+                }
+                return _y - _x
+            case '*':
+                return _y * _x
+            case '/':
+                if (_x == 0) {
+                    j.pushError("cannot divide by 0 " + op);
+                    return
+                }
+                return _y / _x
+            default:
+                j.pushError("invalid logical operator " + op);
+                return
+        }
+    })
+
+
 
 } // initialJoyPrimitives
