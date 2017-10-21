@@ -230,15 +230,28 @@ export class Joy {
         c.kind = 'secondary';
         c.disp = name;
 
-        if (name === 'calc') {
-            quote[2][1][0][0] = c
-            console.log('aaa');
-
+        let recursiveNode = typeof quote == 'object' ? this.getFunctionIfRecursive(quote, name) : null
+        if (typeof recursiveNode != 'undefined') {
+            recursiveNode = c
+            console.log('found recusive function');
         }
-
         this.dictionary[name] = c;
     }
 
+    getFunctionIfRecursive(currentNode: any, name: string): any {
+        for (let i = 0; i < currentNode.length; i++) {
+            let nextNode = currentNode[i]
+            if (typeof nextNode == 'object') {
+                if (nextNode.kind == 'list') {
+                    nextNode = this.getFunctionIfRecursive(nextNode, name)
+                }
+                if (typeof nextNode == 'object' && nextNode.kind == 'literal' && nextNode.disp == name) {
+                    return nextNode
+                }
+            }
+        }
+        return undefined
+    }
 
     public words = function () {
         const w: string[] = [];
@@ -387,8 +400,13 @@ export class Joy {
 
 } // Joy
 
-
-export function deepCopy<T>(o: T): T {
-    return JSON.parse(JSON.stringify(o));
-}
+export const jCopy = ((obj: any) => {
+    switch (typeof obj) {
+        case 'object':
+            let newObj = $.extend(true, [], obj)
+            return newObj
+        default:
+            return obj
+    }
+})
 
