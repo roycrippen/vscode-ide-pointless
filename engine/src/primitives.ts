@@ -1,4 +1,4 @@
-import { Joy } from "./engine"
+import { Joy, jCopy } from "./engine"
 import { update } from "./editor"
 import * as $ from "jquery";
 
@@ -440,16 +440,6 @@ export function loadJoyPrimitives(j: Joy) {
 
     // const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
     // const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
-
-    const jCopy = ((obj: any) => {
-        switch (typeof obj) {
-            case 'object':
-                let newObj = $.extend(true, [], obj)
-                return newObj
-            default:
-                return obj
-        }
-    })
 
     const isLiteral = ((obj: any) => {
         switch (typeof obj) {
