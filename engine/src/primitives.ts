@@ -473,26 +473,34 @@ export function loadJoyPrimitives(j: Joy) {
             return y.disp == x.disp
         }
 
-        if (!isLiteral(y) || !isLiteral(x) || !typesMatch(y, x)) {
+        if (!isLiteral(y) || !isLiteral(x)) {
             j.pushError("types not valid for " + op);
             return
         }
+
+        let _y = getLiteral(y)
+        let _x = getLiteral(x)
+        if (!typesMatch(_y, _x)) {
+            j.pushError("types not valid for " + op);
+            return
+        }
+
         let result = false;
         switch (op) {
             case '=':
-                result = getLiteral(y) == getLiteral(x)
+                result = _y == _x
                 break
             case '>':
-                result = getLiteral(y) > getLiteral(x)
+                result = _y > _x
                 break
             case '>=':
-                result = getLiteral(y) >= getLiteral(x)
+                result = _y >= _x
                 break
             case '<':
-                result = getLiteral(y) < getLiteral(x)
+                result = _y < _x
                 break
             case '<+':
-                result = getLiteral(y) <= getLiteral(x)
+                result = _y <= _x
                 break
             default:
                 j.pushError("invalid logical operator " + op);
