@@ -26,6 +26,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [pop] dip ]                                                      "popd"         define')
     j.execute('[ [swons] step ]                                                   "shunt"        define')
     j.execute('[ [empty] [""] iflist swap shunt ]                                 "reverse"      define')
+    j.execute('[  0 [+] fold ]                                                    "sum"          define')
+    j.execute('[  1 [*] fold ]                                                    "prod"         define')
 
     // joy inilib
     j.execute('[ \"\n\" putch ]                                                   "newline"      define')
@@ -50,8 +52,14 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [[false] [true] ifte] cons ]                                     "negate"       define')
     j.execute('[ apply ]                                                          "i"            define')
     j.execute('[ dup apply ]                                                      "x"            define')
-    j.execute('[ [ ] cons i ]                                                     "call"         define')
+    j.execute('[ [] cons i ]                                                      "call"         define')
     j.execute(`[ swap [=] cons filter size [1 >=] [true] [false] ifte swap pop ]  "in"           define`)
+    j.execute('[ stack [i] dip cons unstack [pop2] dip ]                          "unary"        define')
+    j.execute('[ stack [i] dip cons unstack swap pop ]                            "nullary"      define')
+    j.execute('[ [unary] cons dup [dip] dip i ]                                   "unary2"       define')
+    j.execute('[ [pop] [[1 -] dip dup dip2 times] [pop2] ifte ]                   "times"        define')
+    // j.execute('[  ]                      ""      define')
+
 
     j.execute(`[ "Monday" "Tuesday" "Wednesday" "Thursday"          
     "Friday" "Saturday" "Sunday" ]                     "weekdays"     define`)
