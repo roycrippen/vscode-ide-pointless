@@ -136,6 +136,19 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('<=', (y: any, x: any) => { return evalLogical('<=', y, x) });
     j.primitive('>=', (y: any, x: any) => { return evalLogical('>=', y, x) });
     j.primitive('numerical', (x: any) => { return typeof x === 'number' })
+    j.primitive('null', (x: any) => {
+        switch (typeof x) {
+            case 'number':
+                return x == 0
+            case 'object':
+                if (x.kind == 'list') {
+                    return x.length == 0
+                }
+                return false
+            default:
+                return false
+        }
+    })
 
     // boolean/conditional
     j.primitive('true', () => { return true });
@@ -162,20 +175,6 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // lists
-    j.primitive('empty', () => {
-        let emptyList: any = []
-        emptyList.kind = 'list'
-        return emptyList
-    })
-
-    j.primitive('size', (x: any) => {
-        if (typeof x !== 'object' && typeof x !== 'string') {
-            j.pushError("different type needed for size");
-            return 0;
-        }
-        return x.length
-    });
-
     j.primitive('cons', (x: any, xs: any) => {
         switch (typeof xs) {
             case 'string':
