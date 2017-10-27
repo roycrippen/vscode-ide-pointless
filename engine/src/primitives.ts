@@ -14,6 +14,29 @@ export function loadJoyPrimitives(j: Joy) {
     // language
     j.primitive('define', (quote: any, name: string) => { j.define(quote, name); });
 
+    j.primitive('linrec', (p: any, t: any, r1: any, r2: any) => {
+        // preserve the stack
+        j.execute('stack')
+        let oldStackList: any = j.popStack()
+        j.run(p)
+        let result: boolean = j.popStack()
+        // restore the stack
+        j.execute('newstack')
+        j.pushStack(oldStackList)
+        j.execute('unstack')
+        if (result) {
+            j.run(t)
+        } else {
+            j.run(r1)
+            j.pushStack(p)
+            j.pushStack(t)
+            j.pushStack(r1)
+            j.pushStack(r2)
+            j.execute('linrec')
+            return j.run(r2)
+        }
+    });
+
     // stack
     j.primitive('pop', () => { j.popStack(); });
 
