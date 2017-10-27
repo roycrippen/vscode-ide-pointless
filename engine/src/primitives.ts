@@ -18,12 +18,15 @@ export function loadJoyPrimitives(j: Joy) {
         // preserve the stack
         j.execute('stack')
         let oldStackList: any = j.popStack()
+
         j.run(p)
         let result: boolean = j.popStack()
+
         // restore the stack
         j.execute('newstack')
         j.pushStack(oldStackList)
         j.execute('unstack')
+
         if (result) {
             j.run(t)
         } else {
