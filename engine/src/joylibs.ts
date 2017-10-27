@@ -60,6 +60,14 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [unary] cons dup [dip] dip i ]                                   "unary2"         define')
     j.execute('[ [pop] [[1 -] dip dup dip2 times] [pop2] ifte ]                   "times"          define')
     j.execute('[ [rest] times ]                                                   "drop"           define')
+    j.execute(`[ 
+                  "Monday" "Tuesday" "Wednesday" "Thursday" 
+                  "Friday" "Saturday" "Sunday" 
+               ]                                                                  "weekdays"     define`)
+    j.execute(`[  
+                  "JAN" "FEB" "MAR" "APR" "MAY" "JUN"         
+                  "JUL" "AUG" "SEP" "OCT" "NOV" "DEC" 
+               ]                                                                  "months"       define`)
 
     // agglib
     j.execute('[ "" cons ]                                                        "unitstring"     define')
@@ -88,13 +96,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [null2] [pop2 []] [uncons2] [[pairlist] dip cons] linrec ]       "zip"            define')
     j.execute('[ 1 + ]                                                            "succ"           define')
     j.execute('[ 1 - ]                                                            "pred"           define')
-    j.execute(`[  [] cons  [pop pop] swoncat
-                  [>] swap
-                  [ [dup succ] dip ]
-                  [cons]
-                  linrec ]                                                        "from-to"        define`)
-    j.execute('[ [] from-to ]                                                     "from-to-list"   define')
-    j.execute('[ "" from-to ]                                                     "from-to-string" define')
+    j.execute('[ [>] [pop pop []] [[dup succ] dip] [cons]  linrec ]               "from-to-list"   define')
+    j.execute('[ [>] [pop pop ""] [[dup succ] dip] [cons]  linrec ]               "from-to-string" define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
@@ -120,10 +123,6 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ even not ]                                                       "odd"          define')
 
 
-    j.execute(`[ "Monday" "Tuesday" "Wednesday" "Thursday"          
-    "Friday" "Saturday" "Sunday" ]                     "weekdays"     define`)
-    j.execute(`[ "JAN" "FEB" "MAR" "APR" "MAY" "JUN"         
-    "JUL" "AUG" "SEP" "OCT" "NOV" "DEC" ]              "months"       define`)
     j.execute(` 
                 [ 
                     [ numerical ]
