@@ -26,7 +26,6 @@ export function loadJoyPrimitives(j: Joy) {
         j.execute('newstack')
         j.pushStack(oldStackList)
         j.execute('unstack')
-
         if (result) {
             j.run(t)
         } else {
