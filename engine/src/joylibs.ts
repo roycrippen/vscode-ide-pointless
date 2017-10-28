@@ -101,10 +101,10 @@ export function loadCoreLibrary(j: Joy) {
                    [>] swap [[dup succ] dip ] 
                    [cons] 
                    linrec 
-                ]                                                                 "from-to"    define`)
+                ]                                                                 "from-to"        define`)
     j.execute('[ [] from-to ]                                                     "from-to-list"   define')
     j.execute('[ "" from-to ]                                                     "from-to-string" define')
-    // j.execute('[  ]                      ""      define')
+    j.execute('[ dup2 filter rollup [ not ] concat filter ]                       "split"          define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
