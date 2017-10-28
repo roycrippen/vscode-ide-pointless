@@ -96,8 +96,14 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [null2] [pop2 []] [uncons2] [[pairlist] dip cons] linrec ]       "zip"            define')
     j.execute('[ 1 + ]                                                            "succ"           define')
     j.execute('[ 1 - ]                                                            "pred"           define')
-    j.execute('[ [>] [pop pop []] [[dup succ] dip] [cons]  linrec ]               "from-to-list"   define')
-    j.execute('[ [>] [pop pop ""] [[dup succ] dip] [cons]  linrec ]               "from-to-string" define')
+    j.execute(`[ 
+                   [] cons [pop pop] swoncat 
+                   [>] swap [[dup succ] dip ] 
+                   [cons] 
+                   linrec 
+                ]                                                                 "from-to"    define`)
+    j.execute('[ [] from-to ]                                                     "from-to-list"   define')
+    j.execute('[ "" from-to ]                                                     "from-to-string" define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
@@ -121,7 +127,6 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ 0 < ]                                                            "negative"     define')
     j.execute('[ 2 rem null ]                                                     "even"         define')
     j.execute('[ even not ]                                                       "odd"          define')
-
 
     j.execute(` 
                 [ 
