@@ -213,14 +213,16 @@ export function loadJoyPrimitives(j: Joy) {
                     j.pushError("second argument for 'cons' must be a list/quotation");
                     return xs;
                 }
-                let _xs: any = jCopy(xs)
                 if (typeof x == 'number' || typeof x == 'boolean' || typeof x == 'string') {
-                    _xs.unshift({ val: x, kind: 'literal', disp: x.toString() });
+                    const _xs1: any = [{ kind: 'literal', disp: x.toString(), val: x }, ...xs]
+                    _xs1.kind = 'list'
+                    return _xs1;
                 } else {
-                    let _x: any = jCopy(x)
-                    _xs.unshift(_x);
+                    // const _x: any = jCopy(x)
+                    const _xs2: any = [jCopy(x), ...xs]
+                    _xs2.kind = 'list'
+                    return _xs2;
                 }
-                return _xs;
             default:
                 j.pushError("second argument for 'cons' must be a list/quotation");
                 return xs;
@@ -257,10 +259,9 @@ export function loadJoyPrimitives(j: Joy) {
             return
         }
 
-        for (let i = 0; i < ys.length; i += 1) {
-            xs.push(ys[i]);
-        }
-        return xs
+        const _xs: any = xs.concat(ys)
+        _xs.kind = 'list'
+        return _xs
     });
 
     j.primitive('range', (y: number, x: number) => {
