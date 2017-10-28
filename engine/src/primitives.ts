@@ -147,11 +147,14 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('/', (y: any, x: number) => { return evalNumeric('/', y, x) });
 
     j.primitive('rem', (y: number, x: number) => {
-        if (!is2Numbers(x, y)) {
+        const _x = isLiteral(x) ? getLiteral(x) : x
+        const _y = isLiteral(y) ? getLiteral(y) : y
+        if (!is2Numbers(_x, _y)) {
             j.pushError("operands for 'rem' must be numbers");
             return;
         }
-        j.pushStack(y % x);
+
+        j.pushStack(_y % _x);
     });
 
     // comparison
