@@ -46,6 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 
+
+
     // let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {
     //     if (typeof provider !== 'undefined') {
     //         //TODO: implement on reload command

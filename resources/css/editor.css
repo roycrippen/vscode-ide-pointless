@@ -128,12 +128,12 @@ span {
     resize: vertical;
 }
 
-#context, #result, #display
+#context, #result
 {
     height: 6em;
 }
 
-#error, #dictionary
+#error, #dictionary, #display
 {
     height: 4em;
 }

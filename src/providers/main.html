@@ -19,21 +19,6 @@
             document.getElementById("dropdown-dictionary").classList.toggle("show");
         }
 
-        function dictionaryDblClick() {
-            let a = $("#dropdown-dictionary")[0].children
-            let source = ''
-            for (i = 0; i < a.length; i++) {
-                if (a[i].baseURI === a[i].href) {
-                    source = a[i].innerText
-                    break;
-                }
-            }
-            if (source !== '') {
-                console.log('source = ' + source)
-                $("#dropdown-search").val(source)
-            }
-        }
-
         function filterFunction() {
             var input, filter, ul, li, a, i;
             input = document.getElementById("dropdown-search");
@@ -49,34 +34,6 @@
             }
         }
 
-        // // Close the dropdown if the user clicks outside of it
-        // window.onclick = function (event) {
-        //     console.log(JSON.stringify(event.target));
-        //     if (!event.target.matches('.dropbtn')) {
-
-        //         if (event.target.matches('.drop-input')) {
-        //             console.log('.drop-input found!');
-        //             event.target.focus();
-        //             event.preventDefault();
-        //             return;
-        //         } else if (event.target.matches('.drop-element')) {
-        //             console.log('.drop-element found!');
-        //             // event.target.focus();
-        //             return;
-        //         }
-
-        //         var dropdowns = document.getElementsByClassName("dropdown-content");
-        //         var i;
-        //         for (i = 0; i < dropdowns.length; i++) {
-        //             var openDropdown = dropdowns[i];
-        //             console.log(i);
-        //             if (openDropdown.classList.contains('show')) {
-        //                 console.log(openDropdown);
-        //                 openDropdown.classList.remove('show');
-        //             }
-        //         }
-        //     }
-        // }
     </script>
     <script type="text/brief">
   </script>
@@ -111,27 +68,23 @@
     </div>
     <hr />
     <div class="title-container">
-        <div class="title-header">Error Console</div>
-        <div id="error"></div>
-    </div>
-    <hr />
-    <div class="title-container">
         <div class="title-header">Dictionary Explorer</div>
         <div class="dropdown">
             <div class="container">
                 <input id="dropdown-search" onclick="inputClick()" class="drop-input" type="text" placeholder="Search.." onkeyup="filterFunction()">
                 <button id='source-button' type="button"> Load </button>
-                <div id="dropdown-dictionary" ondblclick="dictionaryDblClick()" class="dropdown-content"></div>
+                <div id="dropdown-dictionary" class="dropdown-content"></div>
                 <div id="element-defintion"></div>
             </div>
         </div>
     </div>
     <hr />
-    <!-- <h2>
-        <a target="_blank" href="http://youtu.be/R3MNcA2dpts?hd=1">Demo based off forked "Be Brief!" Editor</a>
-    </h2> -->
+    <div class="title-container">
+        <div class="title-header">Error Console</div>
+        <div id="error"></div>
+    </div>
+    <hr />
     <p>Help
-        <!-- <a target="_blank" href="https://github.com/AshleyF/brief">"Be Brief!" Editor (@author AshleyF)</a> -->
     </p>
     <ul>
         <li>"primitives" to to get a list of primitive function</li>

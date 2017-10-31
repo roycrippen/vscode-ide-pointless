@@ -554,6 +554,17 @@ $(document).click(function (e) {
     }
 })
 
+$(document).dblclick(function (e) {
+    let parent = e.target.parentElement
+    if (parent != null && parent.id == 'dropdown-dictionary') {
+        let source = e.target.outerText
+        console.log('source = ' + source)
+        $("#dropdown-search").val(source)
+    }
+})
+
+
+
 // $(document).dblclick(() => {
 
 
@@ -604,15 +615,6 @@ $(document).click(function (e) {
 
 
 
-
-/*
-- Not allowing definitions containing literal values
-- Completion bug (fixed) with "2bi"
-
-TODO:
-- Quote/Unquote
-- Copy/Paste
-*/
 
 export interface CursorFn {
     (): string;
