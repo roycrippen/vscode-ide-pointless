@@ -105,11 +105,15 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [] from-to ]                                                     "from-to-list"   define')
     j.execute('[ "" from-to ]                                                     "from-to-string" define')
     j.execute('[ dup2 filter rollup [ not ] concat filter ]                       "split"          define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
+    j.execute('[ [dupd] swoncat [step pop] cons cons step ]                       "pairstep"       define')
+    j.execute('[ [[null] [] [uncons]] dip [dip cons] cons linrec                  "mapr"           define')
+    j.execute('[ [ [[null] ] dip [] cons [pop] swoncat [uncons]] dip linrec ]     "foldr"          define')
+    j.execute('[ [] linrec ]                                                      "tailrec"        define')
+    j.execute(`[ 
+                    [[null2] [pop pop]] dip 
+                    [dip] cons [dip] cons [uncons2] swoncat 
+                    tailrec 
+               ]                                                                  "stepr2"         define`)
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
