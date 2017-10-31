@@ -121,19 +121,30 @@ span {
     color: red;
 }
 
-#context, #dictionary, #output, #error, #result, #display
+#context, #dictionary, #output, #error
 {
     width: 100%;
     overflow: scroll;
     resize: vertical;
 }
 
-#context, #result
+#result, #display
+{
+    overflow: scroll;
+    resize: both;
+}
+
+#context
 {
     height: 6em;
 }
 
-#error, #dictionary, #display
+#display, #result
+{
+    height: 8em;
+}
+
+#error, #dictionary
 {
     height: 4em;
 }
@@ -141,6 +152,17 @@ span {
 #output
 {
     height: 2em;
+}
+
+#display-title-container
+{
+   width: 75%;
+   flex-grow: 2;
+}
+
+#result-title-container
+{
+    flex-grow: 1;
 }
 
 .container {
@@ -158,6 +180,11 @@ span {
     border: 1px solid #3C3C3C;
     display: flex;
     flex-direction: column;
+}
+
+.title-container-row {
+    display: flex;
+    flex-direction: row;
 }
 
 .title-header {

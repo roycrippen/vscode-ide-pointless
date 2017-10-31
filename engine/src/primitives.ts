@@ -85,18 +85,24 @@ export function loadJoyPrimitives(j: Joy) {
     })
 
     // stdout/stdin
-    j.primitive('put', (x: any) => {
+    j.primitive('put', (_x: any) => {
+        if (!isLiteral(_x)) {
+            j.pushError('number, boolean or single character string needed for put');
+            return
+        }
+
+        const x = getLiteral(_x)
         switch (typeof (x)) {
             case "number":
             case "boolean":
-                j.concatDisplayConsole(`${j.print(x)} `)
+                j.concatDisplayConsole(`${j.print(x)}`)
                 break
             case "string":
                 if (x.length != 1) {
                     j.pushError('number, boolean or single character string needed for put');
                     return
                 }
-                j.concatDisplayConsole(`${x} `);
+                j.concatDisplayConsole(`${x}`);
                 break
             default:
                 j.pushError('number, boolean or single character string needed for put');

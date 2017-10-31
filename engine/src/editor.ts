@@ -444,12 +444,12 @@ $(document).keydown(function (e) {
                 editor.MoveNext(e.ctrlKey || false, true, e.shiftKey || false);
             }
             break;
-        case 65: // CTRL-A - Select All
-            if (e.ctrlKey) {
-                e.preventDefault();
-                editor.SelectAll();
-            }
-            break;
+        // case 65: // CTRL-A - Select All
+        //     if (e.ctrlKey) {
+        //         e.preventDefault();
+        //         editor.SelectAll();
+        //     }
+        //     break;
         default:
             break;
     }
@@ -562,59 +562,6 @@ $(document).dblclick(function (e) {
         $("#dropdown-search").val(source)
     }
 })
-
-
-
-// $(document).dblclick(() => {
-
-
-//     // let a = $("#dropdown-dictionary")[0].getElementsByClassName('drop-element')
-//     let a = $("#dropdown-dictionary")[0].getElementsByTagName('option')
-//     if (a.length < 1) {
-//         console.log('no elements found on double click')
-//         return
-//     }
-
-//     let source: string = ''
-//     let target: any = $("#dropdown-search")[0].textContent
-//     if (target === 'null') { return }
-//     let idx = target.indexOf('#')
-//     if (idx < 0) { return }
-//     let _target: string = target.substr(idx, target.length)
-//     console.log('_target = ' + _target)
-
-//     for (let i = 0; i < a.length; i++) {
-//         let val = a[i].getAttributeNode('href').value.trim()
-//         console.log('href = ' + val)
-//         if (_target === val) {
-//             source = a[i].innerHTML
-//             break;
-//         }
-//     }
-//     if (source !== '') {
-//         console.log('source = ' + source)
-//         $("#dropdown-search").val(source)
-//     }
-
-// })
-
-// function dictionaryDblClick() {
-//     let a = $("#dropdown-dictionary")[0].children
-//     let source = ''
-//     for (i = 0; i < a.length; i++) {
-//         if (a[i].baseURI === a[i].href) {
-//             source = a[i].innerText
-//             break;
-//         }
-//     }
-//     if (source !== '') {
-//         console.log('source = ' + source)
-//         $("#dropdown-search").val(source)
-//     }
-// }
-
-
-
 
 export interface CursorFn {
     (): string;
