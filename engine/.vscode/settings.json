@@ -10,8 +10,24 @@
     "cSpell.language": "en",
     "cSpell.words": [
         "combinators",
+        "dupd",
+        "foldr",
+        "iflist",
+        "ifte",
         "libload",
+        "linrec",
+        "popd",
+        "pred",
         "putch",
-        "snoc"
+        "putchars",
+        "rolldown",
+        "snoc",
+        "succ",
+        "swapd",
+        "swoncat",
+        "swons",
+        "tailrec",
+        "uncons",
+        "unswons"
     ]
 }

@@ -29,6 +29,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[  0 [+] fold ]                                                    "sum"              define')
     j.execute('[  1 [*] fold ]                                                    "prod"             define')
     j.execute('[  [pop 1] map sum ]                                               "size"             define')
+    // j.execute('[  ]                      ""      define')
+    // j.execute('[  ]                      ""      define')
 
     // joy inilib
     j.execute('[ \"\n\" putch ]                                                   "newline"          define')
@@ -115,10 +117,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [] interleave2 ]                                                 "interleave2list"  define')
     j.execute('[ [ sum ] [ size ] cleave / ]                                      "average"          define');
     j.execute(`[ 0.0 swap dup [sum] [size] cleave dup	
-	             [ / [ - dup * + ] cons step ] dip pred / ]                       "variance"         define`)
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
-    // j.execute('[  ]                      ""      define')
+                 [ / [ - dup * + ] cons step ] dip pred / ]                       "variance"         define`)
+    j.execute('[ swap [not] concat [] rolldown tailrec ]                          "while"            define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
     // j.execute('[  ]                      ""      define')
