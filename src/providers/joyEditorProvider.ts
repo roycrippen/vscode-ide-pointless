@@ -117,8 +117,10 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
 
         if (fs.existsSync(filename)) {
             const rawFile = fs.readFileSync(filename, 'utf8')
-            const toks = lexJoyCommands(rawFile)
-            const strippedRawFile = toks.join(' ')
+            const strippedRawFile = lexJoyCommands(rawFile).reduce((acc, token) => {
+                return `${acc} ${token.value}`
+            }, "")
+
             var strFile = JSON.stringify(strippedRawFile, null, 4);
 
             array.push(strFile);
@@ -157,14 +159,14 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
 
         let joyFileStrs = this.recursiveLibloadParseAsArray([], filename)
 
-        var pathMain = relativePath.replace('/out', '/src/providers/')
+        var pathMain = relativePath.replace('/out/src', '/src/providers/')
 
         _providerHtml = fs.readFileSync(pathMain + 'main.html', 'utf8')
             .replace(/\${relativePath}/g, relativePath)
             .replace(/\${joyFileStrs}/g, joyFileStrs);
 
 
-        let pathEngine = relativePath.replace('/out', '/engine/src/')
+        let pathEngine = relativePath.replace('/out/src', '/engine/src/')
         fs.writeFile(pathEngine + 'testprovider.html', _providerHtml)
 
         return _providerHtml;
