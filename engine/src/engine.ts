@@ -243,7 +243,6 @@ export class Joy {
 
     // non primitive function definitions for display
     storeIfDefine(tokens: string[]) {
-        // const tokens = this.lex(source);
         const len = tokens.length;
         if (len < 5 || tokens[len - 1] !== 'define') {
             return;
@@ -251,9 +250,21 @@ export class Joy {
         const newSource = tokens.slice(1, len - 3).reduce((s, tok) => `${s} ${tok}`);
         const name: string = tokens[len - 2].replace(/"/g, '');
         const defineStr = `${name} == ${newSource}`
-        this.defines.push(defineStr)
-        // this.defines[name] = newSource;
+        // todo: deal with duplicate functions like Haskell does
+        const index = this.searchDefines(name)
+        index == -1 ? this.defines.push(defineStr) : this.defines[index] = defineStr
     }
+
+    searchDefines(name: string) {
+        let foundIndex = -1
+        this.defines.forEach((s: string, index: number) => {
+            if (s.substr(0, s.search('==')).trim() == name) {
+                foundIndex = index
+            }
+        })
+        return foundIndex
+    }
+
     public getDefines = function (): string[] {
         let xs = this.defines
         xs.sort();
@@ -309,7 +320,6 @@ export class Joy {
 
     public execute = function (source: string) {
         this.clearErrors();
-        // this.clearResults();
         let tokens: string[] = this.lex(source);
         this.storeIfDefine(tokens);
         let ast: any = this.parse(tokens);
