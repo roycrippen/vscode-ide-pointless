@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { lexJoyCommands } from "../../engine/src/joy-lexer";
 const fs = require('fs');
 
 var _joyExtension = "joy";
@@ -56,46 +57,46 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         return this.joyEditorPreview(uri);
     }
 
-    /**
-     * Parse a joy file into memory. This function will return a string that includes a root joy file and
-     * all of its referenced libload library files.
-     * 
-     * If the root joy file references other joy files (via the libload keyword) those strinified files will replace its
-     * libload declaration line.
-     * 
-     * @param str - concatenated joy file represented as a string
-     * @param filename - the root joy file to parse
-     */
-    private recursiveLibloadParseAsString(str: string, filename: string): string {
-        console.log(`parsing file: ${filename}`);
+    // /**
+    //  * Parse a joy file into memory. This function will return a string that includes a root joy file and
+    //  * all of its referenced libload library files.
+    //  * 
+    //  * If the root joy file references other joy files (via the libload keyword) those strinified files will replace its
+    //  * libload declaration line.
+    //  * 
+    //  * @param str - concatenated joy file represented as a string
+    //  * @param filename - the root joy file to parse
+    //  */
+    // private recursiveLibloadParseAsString(str: string, filename: string): string {
+    //     console.log(`parsing file: ${filename}`);
 
-        if (vscode.window.activeTextEditor === undefined) {
-            return ""
-        }
+    //     if (vscode.window.activeTextEditor === undefined) {
+    //         return ""
+    //     }
 
-        var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
+    //     var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
 
-        if (fs.existsSync(filename)) {
-            var rawFile = fs.readFileSync(filename, 'utf8');
-            var strFile = JSON.stringify(rawFile, null, 4);
-            strFile = strFile.slice(1, strFile.length - 1)
+    //     if (fs.existsSync(filename)) {
+    //         var rawFile = fs.readFileSync(filename, 'utf8');
+    //         var strFile = JSON.stringify(rawFile, null, 4);
+    //         strFile = strFile.slice(1, strFile.length - 1)
 
-            var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
-            // var oldLibMatch = str.match(pattern);
-            var newlibMatch = strFile.match(pattern);
-            str = (str === '') ? strFile : str.replace(pattern, strFile);
+    //         var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
+    //         // var oldLibMatch = str.match(pattern);
+    //         var newlibMatch = strFile.match(pattern);
+    //         str = (str === '') ? strFile : str.replace(pattern, strFile);
 
-            if (newlibMatch !== null && typeof newlibMatch !== 'undefined') {
-                newlibMatch.forEach((a) => {
-                    var lib = a.match(/(^)".*?"/g);
-                    if (lib !== null && typeof lib !== 'undefined' && lib.length > 0) {
-                        str = this.recursiveLibloadParseAsString(str, filePath + lib[0].trim().replace(/^"(.*)\\"$/g, '$1') + '.' + _joyExtension);
-                    }
-                });
-            }
-        }
-        return str;
-    }
+    //         if (newlibMatch !== null && typeof newlibMatch !== 'undefined') {
+    //             newlibMatch.forEach((a) => {
+    //                 var lib = a.match(/(^)".*?"/g);
+    //                 if (lib !== null && typeof lib !== 'undefined' && lib.length > 0) {
+    //                     str = this.recursiveLibloadParseAsString(str, filePath + lib[0].trim().replace(/^"(.*)\\"$/g, '$1') + '.' + _joyExtension);
+    //                 }
+    //             });
+    //         }
+    //     }
+    //     return str;
+    // }
 
     /**
      * Parse a joy file into memory. This function will return an array of joy files represented as strings.
@@ -115,8 +116,10 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
 
         if (fs.existsSync(filename)) {
-            var rawFile = fs.readFileSync(filename, 'utf8');
-            var strFile = JSON.stringify(rawFile, null, 4);
+            const rawFile = fs.readFileSync(filename, 'utf8')
+            const toks = lexJoyCommands(rawFile)
+            const strippedRawFile = toks.join(' ')
+            var strFile = JSON.stringify(strippedRawFile, null, 4);
 
             array.push(strFile);
             var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
