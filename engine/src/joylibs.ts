@@ -29,7 +29,11 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[  0 [+] fold ]                                                    "sum"              define')
     j.execute('[  1 [*] fold ]                                                    "prod"             define')
     j.execute('[  [pop 1] map sum ]                                               "size"             define')
-    // j.execute('[  ]                      ""      define')
+    j.execute('[ [dup] dip swap  ]                                                "over"             define')
+    j.execute('[ [over] dip swap  ]                                               "over2"            define')
+    j.execute('[ [over2] dip swap  ]                                              "over3"            define')
+    j.execute('[ over over ]                                                      "dup2"             define')
+    j.execute('[ over2 over2 over2 ]                                              "dup3"             define')
     // j.execute('[  ]                      ""      define')
 
     // joy inilib
@@ -38,7 +42,7 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ \" \" putch ]                                                    "space"            define')
     j.execute('[ [putch] step ]                                                   "putchars"         define')
     j.execute('[ [putchars] step ]                                                "putstrings"       define')
-    j.execute('[ dupd dup swapd  ]                                                "dup2"             define')
+    // j.execute('[ dupd dup swapd  ]                                                "dup2"             define')
     j.execute('[ [pop true] swap ifte ]                                           "sequor"           define')
     j.execute('[ [pop false] ifte ]                                               "sequand"          define')
     j.execute('[ [dip] cons dip ]                                                 "dipd"             define')
@@ -103,7 +107,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [dupd] swoncat [step pop] cons cons step ]                       "pairstep"         define')
     j.execute('[ [[null] [] [uncons]] dip [dip cons] cons linrec ]                "mapr"             define')
     j.execute('[ [ [[null] ] dip [] cons [pop] swoncat [uncons]] dip linrec ]     "foldr"            define')
-    j.execute('[ [] linrec ]                                                      "tailrec"          define')
+    // j.execute('[ [] linrec ]                                                      "tailrec"          define')
+    j.execute('[ dup3 [tailrec] cons cons cons concat ifte ]                      "tailrec"          define')
     j.execute(`[ [[null2] [pop pop]] dip 
                  [dip] cons [dip] cons [uncons2] swoncat 
                  tailrec ]                                                        "stepr2"           define`)
@@ -125,10 +130,10 @@ export function loadCoreLibrary(j: Joy) {
     // j.execute('[  ]                      ""      define')
 
     // joy numlib
-    j.execute('[ 0 > ]                                                            "positive"     define')
-    j.execute('[ 0 < ]                                                            "negative"     define')
-    j.execute('[ 2 rem null ]                                                     "even"         define')
-    j.execute('[ even not ]                                                       "odd"          define')
+    // j.execute('[ 0 > ]                                                            "positive"     define')
+    // j.execute('[ 0 < ]                                                            "negative"     define')
+    // j.execute('[ 2 rem null ]                                                     "even"         define')
+    // j.execute('[ even not ]                                                       "odd"          define')
 
     j.execute(`[ [ numerical ]
                  [ ]
