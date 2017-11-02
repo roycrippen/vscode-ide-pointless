@@ -12,20 +12,34 @@ export function loadJoyPrimitives(j: Joy) {
     });
 
     // language
-    j.primitive('define', (quote: any, name: string) => { j.define(quote, name); });
+    j.primitive('define', (quote: any, name: string) => { j.define(quote, name); })
+
+    // recursive lib function - limited by js stack
+    // j.primitive('while', (b: any, d: any) => {
+    //     while (true) {
+    //         // preserve the stack
+    //         j.execute('stack')
+    //         const oldStackList: any = jCopy(j.popStack())
+
+    //         j.run(b)
+    //         const result: boolean = j.popStack()
+
+    //         // restore the stack
+    //         j.execute('newstack')
+    //         j.pushStack(oldStackList)
+    //         j.execute('unstack')
+    //         if (!result) {
+    //             break
+    //         }
+    //         j.run(d)
+    //     }
+    // })
 
     j.primitive('linrec', (p: any, t: any, r1: any, r2: any) => {
-        // preserve the stack
-        j.execute('stack')
-        let oldStackList: any = j.popStack()
-
+        const oldStack = copyStack()
         j.run(p)
-        let result: boolean = j.popStack()
-
-        // restore the stack
-        j.execute('newstack')
-        j.pushStack(oldStackList)
-        j.execute('unstack')
+        const result: boolean = j.popStack()
+        replaceStack(oldStack)
         if (result) {
             j.run(t)
         } else {
@@ -37,7 +51,7 @@ export function loadJoyPrimitives(j: Joy) {
             j.execute('linrec')
             return j.run(r2)
         }
-    });
+    })
 
     // stack
     j.primitive('pop', () => { j.popStack(); });
@@ -179,6 +193,8 @@ export function loadJoyPrimitives(j: Joy) {
                     return x.length == 0
                 }
                 return false
+            case 'string':
+                return x == ''
             default:
                 return false
         }
@@ -197,12 +213,14 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('list', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
     j.primitive('numerical', (x: any) => { j.pushStack(typeof x === 'number') });
     j.primitive('ifte', (x: any, p: any, q: any) => {
-        j.execute('stack')
-        let oldStackList: any = j.popStack()
+        const oldStack = copyStack()
+        // j.execute('stack')
+        // let oldStackList: any = j.popStack()
         j.run(x)
         const predicate = j.popStack()
-        j.pushStack(oldStackList)
-        j.execute('unstack')
+        // j.pushStack(oldStackList)
+        j.setStack(oldStack)
+        // j.execute('unstack')
         j.run(predicate ? p : q)
         let result = j.popStack()
         return result
@@ -552,11 +570,6 @@ export function loadJoyPrimitives(j: Joy) {
         let _y = getLiteral(y)
         let _x = getLiteral(x)
 
-        // if (!is2Numbers(_y, _x) || !(typeof _y === 'string' && _y.length === 1 && typeof _x === 'number')) {
-        //     j.pushError("types not valid for " + op);
-        //     return
-        // }
-
         switch (op) {
             case '+':
                 if (typeof _y === 'string' && _y.length === 1 && typeof _x === 'number') {
@@ -580,6 +593,15 @@ export function loadJoyPrimitives(j: Joy) {
                 j.pushError("invalid logical operator " + op);
                 return
         }
+    })
+
+
+    const copyStack = (() => {
+        return jCopy(j.getStack())
+    })
+
+    const replaceStack = ((stack: any) => {
+        j.setStack(stack)
     })
 
 
