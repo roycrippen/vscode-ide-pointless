@@ -318,6 +318,10 @@ export class Joy {
         return this.context;
     };
 
+    public setStack(stack: any) {
+        this.context = stack
+    }
+
     public execute = function (source: string) {
         this.clearErrors();
         let tokens: string[] = this.lex(source);
