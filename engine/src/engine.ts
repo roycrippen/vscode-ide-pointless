@@ -179,12 +179,34 @@ export class Joy {
         return function (j: Joy) {
             for (let i = 0; i < quote.length; i += 1) {
                 const w = quote[i];
-                if (typeof w === 'function') w(j);
-                else if (w.kind === 'list') j.context.stack.unshift(w);
-                else if (w.kind === 'literal') j.context.stack.unshift(w.val);
-                else j.errors.push({ location: "function compile", msg: `Unexpected kind: ${w.kind}` });
+                switch (typeof w) {
+                    case 'function':
+                        const nextCommand = quote[i + 1]
+                        if (typeof nextCommand == 'function' && nextCommand.disp == '=') {
+                            j.context.stack.unshift(w)
+                            break
+                        }
+                        w(j)
+                        break
+                    case 'object':
+                        switch (w.kind) {
+                            case 'list':
+                                j.context.stack.unshift(w)
+                                break
+                            case 'literal':
+                                j.context.stack.unshift(w.val)
+                                break
+                            default:
+                                j.errors.push({ location: "function compile", msg: `Unexpected kind: ${w.kind}` });
+                                break
+                        }
+                        break
+                    default:
+                        j.errors.push({ location: "function compile", msg: `Unexpected quote type: ${typeof w}` });
+                        break
+                }
             }
-        };
+        }
     }
 
     public print(ast: any): string {
