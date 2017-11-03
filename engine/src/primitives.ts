@@ -5,12 +5,6 @@ import * as $ from "jquery";
 // load joy primitives into and instance of the engine
 export function loadJoyPrimitives(j: Joy) {
 
-    // used for testing new code
-    j.primitive('aaa', () => {
-
-
-    });
-
     // language
     j.primitive('define', (quote: any, name: string) => { j.define(quote, name); })
 
@@ -61,7 +55,7 @@ export function loadJoyPrimitives(j: Joy) {
         if (typeof (x) === 'object') {
             xCopy = jCopy(x)
         }
-        const ret: any = [xCopy, x];
+        const ret: any = [x, xCopy];
         ret.kind = 'tuple';
         return ret;
 
@@ -211,7 +205,10 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('xor', (y: any, x: any) => { j.pushStack((y || x) && !(y && x)) });
 
     j.primitive('list', (x: any) => { j.pushStack(typeof x === 'object' && x.kind === 'list') });
-    j.primitive('numerical', (x: any) => { j.pushStack(typeof x === 'number') });
+    j.primitive('numerical', (x: any) => {
+        const _x = isLiteral(x) ? getLiteral(x) : x
+        j.pushStack(typeof _x === 'number')
+    });
     j.primitive('ifte', (x: any, p: any, q: any) => {
         const oldStack = copyStack()
         // j.execute('stack')
@@ -251,7 +248,7 @@ export function loadJoyPrimitives(j: Joy) {
                     return _xs2;
                 }
             default:
-                j.pushError('primitive cons', "second argument for 'cons' must be a list/quotation");
+                j.pushError('primitive cons', "unknown type for second argument");
                 return xs;
         }
     });
@@ -270,9 +267,11 @@ export function loadJoyPrimitives(j: Joy) {
                     j.pushError('primitive snoc', "argument for 'snoc' must be a non-empty list or quotation");
                     return
                 }
-                const x = jCopy(xs.shift());
+                const x = jCopy(xs[0]);
                 j.pushStack(x);
-                return xs;
+                const _xs = xs.slice(1)
+                _xs.kind = 'list'
+                return _xs;
             default:
                 j.pushError('primitive snoc', "argument for 'snoc' must be a non-empty list, quotation or string");
                 return
@@ -386,6 +385,7 @@ export function loadJoyPrimitives(j: Joy) {
                     f.kind = 'list'
                     for (let i = 0; i < xs.length; i += 1) {
                         const x = jCopy(xs[i])
+                        // const _x = typeof x == 'function' ? x.disp : x 
                         j.pushStack(x)
                         let _q = jCopy(q)
                         j.run(_q)
@@ -427,7 +427,7 @@ export function loadJoyPrimitives(j: Joy) {
         }
     });
 
-    // convenience, not displayed a true primitives
+    // convenience, not displayed as a true primitives
     j.primitive('libload', (s: string) => {
         // do nothing, libraries loaded through extension
     });
