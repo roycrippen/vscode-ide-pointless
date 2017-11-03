@@ -512,29 +512,6 @@ export function loadJoyPrimitives(j: Joy) {
     // const deepCopy = ((obj: any) => JSON.parse(JSON.stringify(obj)))
     // const jsonEqual = ((a: any, b: any) => JSON.stringify(a) === JSON.stringify(b))
 
-    const isLiteral = ((obj: any) => {
-        switch (typeof obj) {
-            case 'string':
-            case 'number':
-            case 'boolean':
-                return true
-            case 'object':
-                if (obj.kind === 'literal') {
-                    return true
-                }
-                return false
-            default:
-                return false
-        }
-    })
-
-    const getLiteral = ((obj: any) => {
-        if (typeof obj === 'object') {
-            return obj.val
-        }
-        return obj
-    })
-
     const typesMatch = ((y: any, x: any) => {
         return typeof y === typeof x
     })
@@ -626,3 +603,26 @@ export function loadJoyPrimitives(j: Joy) {
 
 
 } // initialJoyPrimitives
+
+export const isLiteral = ((obj: any) => {
+    switch (typeof obj) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+            return true
+        case 'object':
+            if (obj.kind === 'literal') {
+                return true
+            }
+            return false
+        default:
+            return false
+    }
+})
+
+export const getLiteral = ((obj: any) => {
+    if (typeof obj === 'object') {
+        return obj.val
+    }
+    return obj
+})
