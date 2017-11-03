@@ -28,6 +28,8 @@
         "swons",
         "tailrec",
         "uncons",
+        "unitlist",
+        "unitstring",
         "unswons"
     ]
 }

@@ -75,7 +75,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     j.primitive('unstack', (xs: any) => {
         if (typeof (xs) !== 'object' || xs.kind !== 'list') {
-            j.pushError('unstack requires a list');
+            j.pushError('primitive unstack', 'unstack requires a list');
             return
         }
         while (j.stackLength() > 0) {
@@ -101,7 +101,7 @@ export function loadJoyPrimitives(j: Joy) {
     // stdout/stdin
     j.primitive('put', (_x: any) => {
         if (!isLiteral(_x)) {
-            j.pushError('number, boolean or single character string needed for put');
+            j.pushError('primitive put', 'number, boolean or single character string needed for put');
             return
         }
 
@@ -113,13 +113,13 @@ export function loadJoyPrimitives(j: Joy) {
                 break
             case "string":
                 if (x.length != 1) {
-                    j.pushError('number, boolean or single character string needed for put');
+                    j.pushError('primitive put', 'number, boolean or single character string needed for put');
                     return
                 }
                 j.concatDisplayConsole(`${x}`);
                 break
             default:
-                j.pushError('number, boolean or single character string needed for put');
+                j.pushError('primitive put', 'number, boolean or single character string needed for put');
                 return
         }
         if (j.editor.Cursor().type !== "Nil") {
@@ -138,13 +138,13 @@ export function loadJoyPrimitives(j: Joy) {
                 break
             case "string":
                 if (x.length != 1) {
-                    j.pushError('number, boolean or single character string needed for put');
+                    j.pushError('primitive putch', 'number, boolean or single character string needed for put');
                     return
                 }
                 j.concatDisplayConsole(x)
                 break
             default:
-                j.pushError('number, boolean or single character string needed for put');
+                j.pushError('primitive putch', 'number, boolean or single character string needed for put');
         }
         if (j.editor.Cursor().type !== "Nil") {
             j.editor.DeletePrev(false, false)
@@ -170,7 +170,7 @@ export function loadJoyPrimitives(j: Joy) {
         const _x = isLiteral(x) ? getLiteral(x) : x
         const _y = isLiteral(y) ? getLiteral(y) : y
         if (!is2Numbers(_x, _y)) {
-            j.pushError("operands for 'rem' must be numbers");
+            j.pushError('primitive rem', "operands for 'rem' must be numbers");
             return;
         }
 
@@ -231,13 +231,13 @@ export function loadJoyPrimitives(j: Joy) {
         switch (typeof xs) {
             case 'string':
                 if (!(typeof x === 'string' && x.length === 1)) {
-                    j.pushError("first argument for 'cons' string must be a single character")
+                    j.pushError('primitive cons', "first argument for 'cons' string must be a single character")
                     return xs
                 }
                 return x + xs
             case 'object':
                 if (xs.kind !== 'list') {
-                    j.pushError("second argument for 'cons' must be a list/quotation");
+                    j.pushError('primitive cons', "second argument for 'cons' must be a list/quotation");
                     return xs;
                 }
                 if (typeof x == 'number' || typeof x == 'boolean' || typeof x == 'string') {
@@ -251,23 +251,32 @@ export function loadJoyPrimitives(j: Joy) {
                     return _xs2;
                 }
             default:
-                j.pushError("second argument for 'cons' must be a list/quotation");
+                j.pushError('primitive cons', "second argument for 'cons' must be a list/quotation");
                 return xs;
         }
     });
 
     j.primitive('snoc', (xs: any) => {
-        if (typeof xs === 'string' && xs.length > 0) {
-            j.pushStack(xs[0]);
-            return xs.slice(1);
+        switch (typeof xs) {
+            case 'string':
+                if (xs.length < 1) {
+                    j.pushError('primitive snoc', "argument for 'snoc' must be a non-empty string");
+                    return
+                }
+                j.pushStack(xs[0]);
+                return xs.slice(1);
+            case 'object':
+                if (!(xs.kind === 'list' && xs.length > 0)) {
+                    j.pushError('primitive snoc', "argument for 'snoc' must be a non-empty list or quotation");
+                    return
+                }
+                const x = jCopy(xs.shift());
+                j.pushStack(x);
+                return xs;
+            default:
+                j.pushError('primitive snoc', "argument for 'snoc' must be a non-empty list, quotation or string");
+                return
         }
-        if (!(typeof xs === 'object' && xs.kind === 'list')) {
-            j.pushError("argument for 'snoc' must be a non-empty list/quotation/string");
-            return xs;
-        }
-        const x = xs.shift();
-        j.pushStack(x);
-        return xs;
     });
 
     j.primitive('concat', (xs: any, ys: any) => {
@@ -275,14 +284,14 @@ export function loadJoyPrimitives(j: Joy) {
         if (isLiteral(ys)) ys = getLiteral(ys)
 
         if (typeof xs !== typeof ys) {
-            j.pushError("arguments for 'concat' must be the same type");
+            j.pushError('primitive concat', "arguments for 'concat' must be the same type");
             return
         }
         if (typeof xs === 'string' && typeof ys === 'string') {
             return xs.concat(ys);
         }
         if (xs.kind !== 'list' || ys.kind !== 'list') {
-            j.pushError("arguments for 'concat' must be a lists and/or quotations");
+            j.pushError('primitive concat', "arguments for 'concat' must be a lists and/or quotations");
             return
         }
 
@@ -302,7 +311,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     j.primitive('step', (xs: any, q: any) => {
         if (q === undefined || typeof q !== 'object' || q.kind !== 'list') {
-            j.pushError("second argument of 'step' must be a quotation")
+            j.pushError('primitive step', "second argument of 'step' must be a quotation")
             return
         }
         const xsCopy = jCopy(xs)
@@ -317,14 +326,14 @@ export function loadJoyPrimitives(j: Joy) {
             case 'object':
                 if (xs.kind === 'list') {
                     for (let i = 0; i < xs.length; i += 1) {
-                        j.pushStack(xsCopy[i].val)
+                        j.pushStack(xsCopy[i])
                         let _q = jCopy(q)
                         j.run(_q)
                     }
                 }
                 break;
             default:
-                j.pushError("first argument of 'map' must be a string or list/quotation")
+                j.pushError('primitive step', "first argument of 'map' must be a string or list/quotation")
         }
     });
 
@@ -347,14 +356,14 @@ export function loadJoyPrimitives(j: Joy) {
                         j.pushStack(jCopy(xs[i]))
                         let _q = jCopy(q)
                         j.run(_q)
-                        j.assertStack(1)
+                        j.assertStack('primitive map', 1)
                         _xs.push(j.popStack())
                     }
                     return _xs
                 }
                 break;
             default:
-                j.pushError("first argument of 'map' must be a string or list/quotation")
+                j.pushError('primitive map', "first argument of 'map' must be a string or list/quotation")
         }
     });
 
@@ -388,7 +397,7 @@ export function loadJoyPrimitives(j: Joy) {
                 }
                 break;
             default:
-                j.pushError("first argument of 'filter' must be a string or list/quotation");
+                j.pushError('primitive filter', "first argument of 'filter' must be a string or list/quotation");
         }
     });
 
@@ -414,7 +423,7 @@ export function loadJoyPrimitives(j: Joy) {
                 }
                 break;
             default:
-                j.pushError("first argument of 'fold' must be a string or list/quotation");
+                j.pushError('primitive fold', "first argument of 'fold' must be a string or list/quotation");
         }
     });
 
@@ -526,14 +535,14 @@ export function loadJoyPrimitives(j: Joy) {
         }
 
         if (!isLiteral(y) || !isLiteral(x)) {
-            j.pushError("types not valid for " + op);
+            j.pushError('function evalLogical', "must be a literal for " + op);
             return
         }
 
         let _y = getLiteral(y)
         let _x = getLiteral(x)
         if (!typesMatch(_y, _x)) {
-            j.pushError("types not valid for " + op);
+            j.pushError('function evalLogical', "types must be the same " + op);
             return
         }
 
@@ -555,7 +564,7 @@ export function loadJoyPrimitives(j: Joy) {
                 result = _y <= _x
                 break
             default:
-                j.pushError("invalid logical operator " + op);
+                j.pushError('function evalLogical', "invalid logical operator " + op);
                 return
         }
         return result
@@ -563,7 +572,7 @@ export function loadJoyPrimitives(j: Joy) {
 
     const evalNumeric = ((op: string, y: any, x: any) => {
         if (!isLiteral(y) && !isLiteral(x)) {
-            j.pushError("types not valid for " + op);
+            j.pushError('function evalNumeric', "types not valid for " + op);
             return
         }
 
@@ -585,12 +594,12 @@ export function loadJoyPrimitives(j: Joy) {
                 return _y * _x
             case '/':
                 if (_x == 0) {
-                    j.pushError("cannot divide by 0 " + op);
+                    j.pushError('function evalNumeric', "cannot divide by 0 " + op);
                     return
                 }
                 return _y / _x
             default:
-                j.pushError("invalid logical operator " + op);
+                j.pushError('function evalNumeric', "invalid logical operator " + op);
                 return
         }
     })

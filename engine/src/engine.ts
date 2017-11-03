@@ -11,7 +11,7 @@ export class Joy {
 
     // state variables
     private dictionary: { [key: string]: any[] }
-    private errors: string[]
+    private errors: Error[]
     private resultConsole: string
     private displayConsole: string
     private context: { stack: any[] }
@@ -29,21 +29,25 @@ export class Joy {
         loadJoyPrimitives(this)
         loadCoreLibrary(this)
     }
-
-    public assertStack(length: number) {
+    // {location: "", msg: ""}
+    public assertStack(sender: string, length: number) {
         if (this.context.stack.length < length) {
-            this.errors.push('Stack underflow!');
+            this.errors.push({ location: sender, msg: 'Stack underflow!' });
         }
     }
 
     public stackLength() { return this.context.stack.length }
 
     // error display functions
-    public pushError = function (errorText: string) {
-        this.errors.push(errorText);
+    public pushError = function (sender: string, errorText: string) {
+        this.errors.push({ location: sender, msg: errorText });
     };
     public getErrors = function () {
-        return this.errors;
+        let res: string[] = []
+        this.errors.forEach((val: Error) => {
+            res.push(`Sender: ${val.location}, msg: ${val.msg}`)
+        })
+        return res
     };
     public clearErrors = function () {
         this.errors = [];
@@ -74,9 +78,9 @@ export class Joy {
 
     // lex the joy source string
     lex(source: string) {
-        if (this.errors.length > 0) {
-            return [];
-        }
+        // if (this.errors.length > 0) {
+        //     return [];
+        // }
 
         function isWhitespace(c: string) {
             return c === ' ' || c === '\n' || c === '\r' || c === '\t' || c === '\f';
@@ -115,7 +119,7 @@ export class Joy {
                 }
             }
         }
-        if (tok.length > 0) this.errors.push(`Incomplete string token: '${tok}'`);
+        if (tok.length > 0) this.errors.push({ location: "function lex", msg: `Incomplete string token: '${tok}'` });
 
         return tokens;
     }
@@ -130,7 +134,7 @@ export class Joy {
 
     error(token: string) {
         const e: any = function () {
-            this.errors.push(`Undefined word: '${token}'`);
+            this.errors.push({ location: "function error", msg: `Undefined word: '${token}'` });
         };
         e.kind = 'error';
         e.disp = token;
@@ -178,7 +182,7 @@ export class Joy {
                 if (typeof w === 'function') w(j);
                 else if (w.kind === 'list') j.context.stack.unshift(w);
                 else if (w.kind === 'literal') j.context.stack.unshift(w.val);
-                else j.errors.push(`Unexpected kind: ${w.kind}`);
+                else j.errors.push({ location: "function compile", msg: `Unexpected kind: ${w.kind}` });
             }
         };
     }
@@ -271,12 +275,13 @@ export class Joy {
         return xs;
     };
 
-
     public primitive = function (name: string, func: any) {
         // const f = func;
         const newWord: any = function (j: Joy) {
             const len = func.length;
-            j.assertStack(len);
+            if (name != '.') {
+                j.assertStack("function primitive running '" + name + "'", len);
+            }
             const args = j.context.stack.slice(0, len).reverse(); // TODO: more efficient that slice/reverse
             j.context.stack = j.context.stack.slice(len);
             const result = func(...args);
@@ -305,12 +310,12 @@ export class Joy {
     };
 
     public peekStack = function () {
-        this.assertStack(1);
+        this.assertStack("function peekStack", 1);
         return this.context.stack[0];
     };
 
     public popStack = function () {
-        this.assertStack(1);
+        this.assertStack("function popStack", 1);
         return this.context.stack.shift();
     };
 
@@ -323,7 +328,7 @@ export class Joy {
     }
 
     public execute = function (source: string) {
-        this.clearErrors();
+        // this.clearErrors();
         let tokens: string[] = this.lex(source);
         this.storeIfDefine(tokens);
         let ast: any = this.parse(tokens);
@@ -479,3 +484,9 @@ export const getFunctionIfRecursive = ((currentNode: any, name: string): any => 
     }
     return undefined
 })
+
+export interface Error {
+    location: string,
+    msg: string
+}
+

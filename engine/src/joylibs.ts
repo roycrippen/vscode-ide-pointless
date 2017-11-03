@@ -4,37 +4,84 @@ import { Joy } from "./engine"
 export function loadCoreLibrary(j: Joy) {
 
     // core
-    j.execute('[ dup dip ]                                                        "x"                define')
-    j.execute('[ x pop ]                                                          "i"                define')
-    j.execute('[ [ ] ifte ]                                                       "when"             define')
-    j.execute('[ [ ] swap ifte ]                                                  "unless"           define')
-    j.execute('[ [dup] dip ]                                                      "dupd"             define')
-    j.execute('[ [swap] dip ]                                                     "swapd"            define')
+    // j.execute('[ 1 ]                                  "true"            define')
+    // j.execute('[ 0 ]                                  "false"           define')
+    // j.execute('[ null ]                               "not"             define')
+
+    j.execute('[ [] cons ]                            "unit"            define')
+    j.execute('[ [] cons ]                            "unitlist"        define')
+    j.execute('[ "" cons ]                            "unitstring"      define')
+    j.execute('[ dup dip swap ]                       "x"               define')
+    j.execute('[ x swap pop ]                         "i"               define')
+    // j.execute('[ unitlist dip ]                       "swap"            define')
+
+    j.execute('[ pop pop ]                            "pop2"            define')
+    j.execute('[ pop pop pop ]                        "pop3"            define')
+
+    j.execute('[ [pop] dip ]                          "popd"            define')
+    j.execute('[ [dup] dip ]                          "dupd"            define')
+    j.execute('[ [swap] dip ]                         "swapd"           define')
+
+    j.execute('[ swap cons ]                          "swons"           define')
+    j.execute('[ snoc pop ]                           "first"           define')
+    j.execute('[ snoc swap pop ]                      "rest"            define')
+
+    j.execute('[ [dup] dip swap  ]                    "over"            define')
+    j.execute('[ [over] dip swap  ]                   "over2"           define')
+    j.execute('[ [over2] dip swap  ]                  "over3"           define')
+
+    j.execute('[ over over ]                          "dup2"            define')
+    j.execute('[ over2 over2 over2 ]                  "dup3"            define')
+
+    j.execute('[ dip ]                                "dip1"            define')
+    j.execute('[ [dip] cons dip ]                     "dip2"            define')
+    j.execute('[ [dip2] cons dip ]                    "dip3"            define')
+
+    j.execute('[ swap ]                               "dig1"            define')
+    j.execute('[ [] cons cons dip ]                   "dig2"            define')
+    j.execute('[ [] cons cons cons dip ]              "dig3"            define')
+
+    j.execute('[ swap ]                               "bury1"           define')
+    j.execute('[ [[] cons cons] dip swap i ]          "bury2"           define')
+    j.execute('[ [[] cons cons cons] dip swap i ]     "bury3"           define')
+
+    j.execute('[ stack [i] dip cons unstack swap pop ]                            "nullary"          define')
+    j.execute('[ stack [i] dip cons unstack [pop2] dip ]                          "unary"            define')
+    j.execute('[ stack [i] dip cons unstack [pop3] dip ]                          "binary"           define')
+    j.execute('[ [unary] cons dup [dip] dip i ]                                   "unary2"           define')
+
+    // j.execute('[ dup first swap rest]                                             "uncons"           define')
+    j.execute('[ snoc ]                                             "uncons"           define')
+    // j.execute('[ [pop] [[uncons] dip dup dip2 step] [pop2] ifte ]                "step"             define')
+    // j.execute('[  ]                      ""      define')
+
+
+
+
+
+
+    j.execute('[ [] ifte ]                                                        "when"             define')
+    j.execute('[ [] swap ifte ]                                                   "unless"           define')
+
+
     j.execute('[ 0 swap - ]                                                       "neg"              define')
     j.execute('[ dup 0  [<] [neg] when ]                                          "abs"              define')
     j.execute('[ dupd dip ]                                                       "keep"             define')
-    j.execute('[ pop pop ]                                                        "pop2"             define')
-    j.execute('[ pop pop pop ]                                                    "pop3"             define')
     j.execute('[ swapd swap ]                                                     "rolldown"         define')
     j.execute('[ rolldown rolldown ]                                              "rollup"           define')
     j.execute('[ [list] rollup ifte ]                                             "iflist"           define')
-    j.execute('[ snoc pop ]                                                       "first"            define')
-    j.execute('[ snoc swap pop ]                                                  "rest"             define')
     j.execute('[ dup first swap rest]                                             "uncons"           define')
     j.execute('[ uncons swap ]                                                    "unswons"          define')
-    j.execute('[ swap cons ]                                                      "swons"            define')
-    j.execute('[ [pop] dip ]                                                      "popd"             define')
     j.execute('[ [swons] step ]                                                   "shunt"            define')
     j.execute('[ [[]] [""] iflist swap shunt ]                                    "reverse"          define')
+    j.execute('[ [reverse] dip ]                                                  "reversed"         define')
     j.execute('[  0 [+] fold ]                                                    "sum"              define')
     j.execute('[  1 [*] fold ]                                                    "prod"             define')
-    j.execute('[  [pop 1] map sum ]                                               "size"             define')
-    j.execute('[ [dup] dip swap  ]                                                "over"             define')
-    j.execute('[ [over] dip swap  ]                                               "over2"            define')
-    j.execute('[ [over2] dip swap  ]                                              "over3"            define')
-    j.execute('[ over over ]                                                      "dup2"             define')
-    j.execute('[ over2 over2 over2 ]                                              "dup3"             define')
-    // j.execute('[  ]                      ""      define')
+    j.execute('[  0 [pop 1 + ] fold ]                                             "size"             define')
+    j.execute('[ [reverse] dip [swons] fold ]                                     "aaaconcat"        define')
+    j.execute('[ swap concat ]                                                    "swoncat"          define')
+    j.execute('[ swap concat ]                                                    "swoncat"          define')
+
 
     // joy inilib
     j.execute('[ \"\n\" putch ]                                                   "newline"          define')
@@ -46,23 +93,17 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [pop true] swap ifte ]                                           "sequor"           define')
     j.execute('[ [pop false] ifte ]                                               "sequand"          define')
     j.execute('[ [dip] cons dip ]                                                 "dipd"             define')
-    j.execute('[ [dip] cons dip ]                                                 "dip2"             define')
-    j.execute('[ [dip2] cons dip ]                                                "dip3"             define')
     j.execute('[ [dup] dip2 swap dip2 i ]                                         "cleave"           define')
     j.execute('[ [] unstack ]                                                     "newstack"         define')
     j.execute('[ true ]                                                           "truth"            define')
     j.execute('[ false ]                                                          "falsity"          define')
     j.execute('[ ["a" >=] [32 -] [ ] ifte ]                                       "to-upper"         define')
     j.execute('[ ["a" < ] [32 +] [ ] ifte ]                                       "to-lower"         define')
-    j.execute('[ swap concat ]                                                    "swoncat"          define')
     j.execute('[ [[false] ifte] cons cons ]                                       "conjoin"          define')
     j.execute('[ [ifte] cons [true] swons cons ]                                  "disjoin"          define')
     j.execute('[ [[false] [true] ifte] cons ]                                     "negate"           define')
     j.execute('[ [] cons i ]                                                      "call"             define')
     j.execute(`[ swap [=] cons filter size [1 >=] [true] [false] ifte swap pop ]  "in"               define`)
-    j.execute('[ stack [i] dip cons unstack [pop2] dip ]                          "unary"            define')
-    j.execute('[ stack [i] dip cons unstack swap pop ]                            "nullary"          define')
-    j.execute('[ [unary] cons dup [dip] dip i ]                                   "unary2"           define')
     j.execute('[ [pop] [[1 -] dip dup dip2 times] [pop2] ifte ]                   "times"            define')
     j.execute('[ [rest] times ]                                                   "drop"             define')
     j.execute(`[ "Monday" "Tuesday" "Wednesday" "Thursday" 
@@ -71,8 +112,6 @@ export function loadCoreLibrary(j: Joy) {
                  "JUL" "AUG" "SEP" "OCT" "NOV" "DEC" ]                            "months"           define`)
 
     // agglib
-    j.execute('[ "" cons ]                                                        "unitstring"       define')
-    j.execute('[ [] cons ]                                                        "unitlist"         define')
     j.execute('[ "" cons cons ]                                                   "pairstring"       define')
     j.execute('[ [] cons cons ]                                                   "pairlist"         define')
     j.execute('[ uncons uncons pop ]                                              "unpair"           define')
