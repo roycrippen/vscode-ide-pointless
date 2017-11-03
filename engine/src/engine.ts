@@ -3,7 +3,7 @@
 // import { Lexer } from "./lexer"
 import { Token } from "./tokens"
 import { lexJoyCommands } from "./joy-lexer";
-import { loadJoyPrimitives } from "./primitives"
+import { loadJoyPrimitives, isLiteral, getLiteral } from "./primitives"
 import { loadCoreLibrary } from "./joylibs"
 import * as e from "./editor"
 
@@ -211,6 +211,7 @@ export class Joy {
 
     public print(ast: any): string {
         let output = '';
+        isLiteral(ast) ? ast = getLiteral(ast) : ast
         switch (typeof ast) {
             case 'number':
             case 'string':

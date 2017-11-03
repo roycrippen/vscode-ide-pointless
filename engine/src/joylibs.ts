@@ -11,7 +11,6 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ [] cons ]                            "unit"            define')
     j.execute('[ [] cons ]                            "unitlist"        define')
     j.execute('[ "" cons ]                            "unitstring"      define')
-    // j.execute('[ unit dip ]                           "swap"            define')
 
     j.execute('[ pop pop ]                            "pop2"            define')
     j.execute('[ pop pop pop ]                        "pop3"            define')
