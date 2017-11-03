@@ -51,15 +51,25 @@ export function loadJoyPrimitives(j: Joy) {
     j.primitive('pop', () => { j.popStack(); });
 
     j.primitive('dup', (x: any) => {
-        let xCopy = x;
-        if (typeof (x) === 'object') {
-            xCopy = jCopy(x)
-        }
+        const xCopy = jCopy(x)
         const ret: any = [x, xCopy];
         ret.kind = 'tuple';
         return ret;
-
     })
+
+    j.primitive('x', (p: any) => {
+        const oldStack = copyStack()
+        j.reset() // clear stack, x cannot use any outside args
+        j.run(p)
+        const result = j.popStack()
+        replaceStack(oldStack)
+        j.pushStack(p)
+        j.pushStack(result)
+    });
+
+    j.primitive('i', (p: any) => {
+        j.run(p)
+    });
 
     j.primitive('swap', (y: any, x: any) => {
         const ret: any = [x, y];
@@ -535,7 +545,7 @@ export function loadJoyPrimitives(j: Joy) {
         }
 
         if (!isLiteral(y) || !isLiteral(x)) {
-            j.pushError('function evalLogical', "must be a literal for " + op);
+            j.pushError('function evalLogical', "arguments must be literals for " + op);
             return
         }
 
