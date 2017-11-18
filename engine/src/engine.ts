@@ -433,80 +433,105 @@ export const jCopy = ((obj: any) => {
 })
 
 export const repairRecursiveDefinitions = ((quote: any, c: any, name: string) => {
-    let path = findPropPathIfRecursive(quote, name)
-    if (path != '') {
-        path = path.replace(".kind", "")
-        let xs = path.split(".")
-        switch (xs.length) {
-            case 1:
-                quote[xs[0]][xs[1]] = c
-                break
-            case 2:
-                quote[xs[0]][xs[1]] = c
-                break
-            case 3:
-                quote[xs[0]][xs[1]][xs[2]] = c
-                break
-            case 4:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]] = c
-                break
-            case 5:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]] = c
-                break
-            case 6:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]] = c
-                break
-            case 7:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]] = c
-                break
-            case 8:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]] = c
-                break
-            case 9:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]][xs[8]] = c
-                break
-            case 10:
-                quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]][xs[8]][xs[9]] = c
-                break
-            default:
-                console.log("recursive call deeper than expected")
+    let paths = findPropPathIfRecursive(quote, name)
+    if (paths.length > 0) {
+        for (var i = 0; i < paths.length; i++) {
+            paths[i] = paths[i].replace(".kind", "")
+            let xs = paths[i].split(".")
+            switch (xs.length) {
+                case 1:
+                    quote[xs[0]][xs[1]] = c
+                    break
+                case 2:
+                    quote[xs[0]][xs[1]] = c
+                    break
+                case 3:
+                    quote[xs[0]][xs[1]][xs[2]] = c
+                    break
+                case 4:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]] = c
+                    break
+                case 5:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]] = c
+                    break
+                case 6:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]] = c
+                    break
+                case 7:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]] = c
+                    break
+                case 8:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]] = c
+                    break
+                case 9:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]][xs[8]] = c
+                    break
+                case 10:
+                    quote[xs[0]][xs[1]][xs[2]][xs[3]][xs[4]][xs[5]][xs[6]][xs[7]][xs[8]][xs[9]] = c
+                    break
+                default:
+                    console.log("recursive call deeper than expected")
+            }
         }
     }
     return quote
 })
 
+// export const findPropPathIfRecursive = ((obj: any, name: string) => {
+//     for (var prop in obj) {
+//         if (obj.disp == name) {
+//             return prop;
+//         } else if (typeof obj[prop] == "object") {
+//             let result: string = findPropPathIfRecursive(obj[prop], name);
+//             if (result) {
+//                 return prop + '.' + result;
+//             }
+//         }
+//     }
+//     return "";    // Not strictly needed, but good style
+// })
+
 export const findPropPathIfRecursive = ((obj: any, name: string) => {
+    let xs: string[] = []
     for (var prop in obj) {
         if (obj.disp == name) {
-            return prop;
+            return [prop]
         } else if (typeof obj[prop] == "object") {
-            let result: string = findPropPathIfRecursive(obj[prop], name);
-            if (result) {
-                return prop + '.' + result;
+            let result: string[] = findPropPathIfRecursive(obj[prop], name);
+            if (result.length > 0) {
+                result.map((v) => {
+                    xs.push(prop + '.' + v)
+                    return prop + '.' + v
+                })
+                // s += prop + '.' + result[0];
             }
         }
+        // if (s != '') {
+        //     xs.push(s)
+        // }
     }
-    return "";    // Not strictly needed, but good style
+    return xs
 })
 
-export const getFunctionIfRecursive = ((currentNode: any, name: string): any => {
-    if (name == "") {
-        return undefined
-    }
 
-    for (let i = 0; i < currentNode.length; i++) {
-        let nextNode = currentNode[i]
-        if (typeof nextNode == 'object') {
-            if (nextNode.kind == 'list') {
-                nextNode = getFunctionIfRecursive(nextNode, name)
-            }
-            if (typeof nextNode == 'object' && nextNode.kind == 'literal' && nextNode.disp == name) {
-                return nextNode
-            }
-        }
-    }
-    return undefined
-})
+// export const getFunctionIfRecursive = ((currentNode: any, name: string): any => {
+//     if (name == "") {
+//         return undefined
+//     }
+
+//     for (let i = 0; i < currentNode.length; i++) {
+//         let nextNode = currentNode[i]
+//         if (typeof nextNode == 'object') {
+//             if (nextNode.kind == 'list') {
+//                 nextNode = getFunctionIfRecursive(nextNode, name)
+//             }
+//             if (typeof nextNode == 'object' && nextNode.kind == 'literal' && nextNode.disp == name) {
+//                 return nextNode
+//             }
+//         }
+//     }
+//     return undefined
+// })
 
 export interface Error {
     location: string,
