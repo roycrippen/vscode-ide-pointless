@@ -230,6 +230,8 @@ let inQuote: boolean = false;
 let last: number = 0;
 let editor: Editor = new Editor();
 
+let ws: any = undefined;
+
 function _escape(str: string) {
     return str; // TODO: Breaks rendering of >, <, words and </b> turns into a comment?!
     //return str.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
@@ -378,32 +380,38 @@ export function update() {
     let cursor = editor.Cursor();
     var c = code(root, cursor);
     $("#output").empty().append(c);
-    editor.joy.reset();
-    editor.joy.execute(c);
 
-    const ctx = editor.joy.getStack();
-    $("#context").empty();
-    for (var i = 0; i < ctx.stack.length; i++) {
-        const s = ctx.stack[i];
-        $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
+    // editor.joy.reset();
+    // editor.joy.execute(c);
+
+    if (ws != undefined) {
+        ws.send("run: " + c)
+        console.debug("message to websocket server: " + "run: " + c)
     }
 
-    const results = editor.joy.getResultConsole();
-    let r = $("#result")
-    r.empty();
-    r.append("<div class='stack'/>").append(results);
-    r.scrollTop(r.prop("scrollHeight"));
+    // const ctx = editor.joy.getStack();
+    // $("#context").empty();
+    // for (var i = 0; i < ctx.stack.length; i++) {
+    //     const s = ctx.stack[i];
+    //     $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
+    // }
 
-    const display = editor.joy.getDisplayConsole();
-    $("#display").empty();
-    $("#display").append("<div class='stack'/>").append(display);
+    // const results = editor.joy.getResultConsole();
+    // let r = $("#result")
+    // r.empty();
+    // r.append("<div class='stack'/>").append(results);
+    // r.scrollTop(r.prop("scrollHeight"));
 
-    const errs = editor.joy.getErrors();
-    $("#error").empty();
-    for (var i = 0; i < errs.length; i++) {
-        const s = errs[i];
-        $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
-    }
+    // const display = editor.joy.getDisplayConsole();
+    // $("#display").empty();
+    // $("#display").append("<div class='stack'/>").append(display);
+
+    // const errs = editor.joy.getErrors();
+    // $("#error").empty();
+    // for (var i = 0; i < errs.length; i++) {
+    //     const s = errs[i];
+    //     $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
+    // }
 
 }
 
@@ -526,8 +534,89 @@ $(document).keypress(function (e) {
 });
 
 $(document).ready(function () {
-    update();
+    connect()
 });
+
+function connect() {
+    ws = new WebSocket('ws://localhost:9160/');
+
+    ws.onopen = function () {
+        ws.send("pointless_connection");
+        console.log("connect to websocket server");
+        ws.onmessage = function (event: any) {
+            console.log(event.data)
+            if (event.data == "pointless") {
+                ws.onmessage = onMessage;
+                render(function () {
+                    if (token.length > 0) {
+                        return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
+                    }
+                    else {
+                        return token + "<span class='cursor'>|</span>";
+                    }
+                });
+            } else {
+                console.log("unknown response " + event.data);
+                ws.close();
+            }
+        };
+    };
+
+    ws.onclose = function () {
+        connect()
+    }
+
+}
+function onMessage(event: any) {
+    const response = JSON.parse(event.data)
+
+    var keys = Object.keys(response);
+
+    if (keys.length == 0) {
+        console.log("error, unknown message: " + event.data)
+    }
+
+    switch (keys[0]) {
+        case "stack":
+            $("#context").empty();
+            for (var i = 0; i < response.stack.length; i++) {
+                const s = response.stack[i];
+                $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
+            }
+
+            let r = $("#result")
+            r.empty();
+            r.append("<div class='stack'/>").append(response.display);  // todo rename display to result in haskell
+            r.scrollTop(r.prop("scrollHeight"));
+
+            // const display = editor.joy.getDisplayConsole();
+            // $("#display").empty();
+            // $("#display").append("<div class='stack'/>").append(display);
+
+            $("#error").empty();
+            for (var i = 0; i < response.errors.length; i++) {
+                const s = response.errors[i];
+                $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
+            }
+            break
+        case "vocab":
+            $("#dropdown-search").empty();
+            var defs = response.vocab
+            console.debug('populating dictionary dropdown');
+            for (var i = 0; i < defs.length; i++) {
+                const key: string = defs[i].trim().slice(0, defs[i].indexOf('==')).trim()
+                const value = defs[i].replace("== [", "== ").trim().slice(0, -1)
+                $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
+                // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
+            }
+            break
+        default:
+            console.log("unknown json keys ")
+            console.log(keys);
+            break
+    }
+}
+
 
 $(document).click(function (e) {
     let target = $(e.target)
@@ -566,4 +655,5 @@ $(document).dblclick(function (e) {
 export interface CursorFn {
     (): string;
 }
+
 

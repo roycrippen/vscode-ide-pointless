@@ -57,26 +57,23 @@ export function loadCoreLibrary(j: Joy) {
 
 
 
-    j.execute('[ [] ifte ]                                                        "when"             define')
-    j.execute('[ [] swap ifte ]                                                   "unless"           define')
+    j.execute('[ [] ifte ]                                                        "when"             define') // done
+    j.execute('[ [] swap ifte ]                                                   "unless"           define') // done
 
 
-    j.execute('[ 0 swap - ]                                                       "neg"              define')
-    j.execute('[ dup 0  [<] [neg] when ]                                          "abs"              define')
-    j.execute('[ dupd dip ]                                                       "keep"             define')
-    j.execute('[ swapd swap ]                                                     "rolldown"         define')
-    j.execute('[ rolldown rolldown ]                                              "rollup"           define')
-    j.execute('[ [list] rollup ifte ]                                             "iflist"           define')
-    j.execute('[ dup first swap rest]                                             "uncons"           define')
-    j.execute('[ uncons swap ]                                                    "unswons"          define')
-    j.execute('[ [swons] step ]                                                   "shunt"            define')
-    j.execute('[ [[]] [""] iflist swap shunt ]                                    "reverse"          define')
-    j.execute('[ [reverse] dip ]                                                  "reversed"         define')
-    j.execute('[  0 [+] fold ]                                                    "sum"              define')
-    j.execute('[  1 [*] fold ]                                                    "prod"             define')
-    j.execute('[  0 [pop 1 + ] fold ]                                             "size"             define')
-    j.execute('[ [reverse] dip [swons] fold ]                                     "aaaconcat"        define')
-    j.execute('[ swap concat ]                                                    "swoncat"          define')
+    j.execute('[ 0 swap - ]                                                       "neg"              define') // done
+    j.execute('[ dup 0  [<] [neg] when ]                                          "abs"              define') // done
+    j.execute('[ dupd dip ]                                                       "keep"             define') // done
+    j.execute('[ swapd swap ]                                                     "rolldown"         define') // done
+    j.execute('[ rolldown rolldown ]                                              "rollup"           define') // done
+    j.execute('[ [list] rollup ifte ]                                             "iflist"           define') // done
+    j.execute('[ uncons swap ]                                                    "unswons"          define') // done
+    j.execute('[ [swons] step ]                                                   "shunt"            define') // done
+    j.execute('[ [[]] [""] iflist swap shunt ]                                    "reverse"          define') // done
+    j.execute('[ [reverse] dip ]                                                  "reversed"         define') // done
+    j.execute('[  0 [+] fold ]                                                    "sum"              define') // done
+    j.execute('[  1 [*] fold ]                                                    "prod"             define') // done
+    j.execute('[  0 [pop 1 + ] fold ]                                             "size"             define') // done
     j.execute('[ swap concat ]                                                    "swoncat"          define')
 
 
@@ -131,8 +128,8 @@ export function loadCoreLibrary(j: Joy) {
     j.execute('[ swapd swons swonsd ]                                             "swons2"           define')
     j.execute('[ [unswons] dip unswons swapd ]                                    "unswons2"         define')
     j.execute('[ [null2] [pop2 []] [uncons2] [[pairlist] dip cons] linrec ]       "zip"              define')
-    j.execute('[ 1 + ]                                                            "succ"             define')
-    j.execute('[ 1 - ]                                                            "pred"             define')
+    j.execute('[ 1 + ]                                                            "succ"             define') // done
+    j.execute('[ 1 - ]                                                            "pred"             define') // done
     j.execute(`[ [] cons [pop pop] swoncat 
                  [>] swap [[dup succ] dip ] 
                  [cons] 
@@ -233,27 +230,27 @@ export function loadCoreLibrary(j: Joy) {
       j.execute('[ swap pop ]                           "nip"       define');
       */
 
-    $(document).ready(function () {
-        console.debug('document ready');
-        var joyStrs = contentProviderCallback();
-        j.processJoySource(joyStrs);
-        $("#dropdown-search").empty();
-        var defs = j.getDefines();
-        console.debug('populating dictionary dropdown');
-        for (var i = 0; i < defs.length; i++) {
-            const key: string = defs[i].trim().slice(0, defs[i].indexOf('=='))
-            const value = defs[i].trim()
-            $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
-            // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
-        }
-    });
+    // $(document).ready(function () {
+    //     console.debug('document ready');
+    //     var joyStrs = contentProviderCallback();
+    //     j.processJoySource(joyStrs);
+    //     $("#dropdown-search").empty();
+    //     var defs = j.getDefines();
+    //     console.debug('populating dictionary dropdown');
+    //     for (var i = 0; i < defs.length; i++) {
+    //         const key: string = defs[i].trim().slice(0, defs[i].indexOf('=='))
+    //         const value = defs[i].trim()
+    //         $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
+    //         // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
+    //     }
+    // });
 
 } // loadCoreLibries
 
-function contentProviderCallback() {
-    console.debug('executing content provider callback');
-    /* Note: getJoyFileString is a script function within the vscode content provider.
-       Function eval is called to avoid 'getJoyFileString()' not defined typescript error and to validate */
-    const joyFileStrings = eval('getJoyFileStrings()')
-    return joyFileStrings
-}
+// function contentProviderCallback() {
+//     console.debug('executing content provider callback');
+//     /* Note: getJoyFileString is a script function within the vscode content provider.
+//        Function eval is called to avoid 'getJoyFileString()' not defined typescript error and to validate */
+//     const joyFileStrings = eval('getJoyFileStrings()')
+//     return joyFileStrings
+// }
