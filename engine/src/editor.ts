@@ -601,6 +601,7 @@ function onMessage(event: any) {
             break
         case "vocab":
             $("#dropdown-search").empty();
+            $("#dropdown-dictionary").empty();
             var defs = response.vocab
             console.debug('populating dictionary dropdown');
             for (var i = 0; i < defs.length; i++) {

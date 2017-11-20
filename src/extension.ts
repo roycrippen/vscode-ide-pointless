@@ -46,6 +46,11 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 
+    let cmdOpenPointLessEditor = vscode.commands.registerCommand('extension.openPointLessEditor', () => {
+        return
+    });
+    context.subscriptions.push(cmdOpenPointLessEditor, registration);
+
 
 
     // let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {

@@ -36,7 +36,8 @@
         "Debuggers"
     ],
     "activationEvents": [
-        "onCommand:extension.openJoyEditor"
+        "onCommand:extension.openJoyEditor",
+        "onCommand:extension.openPointLessEditor"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -48,6 +49,10 @@
             {
                 "command": "extension.reloadJoyEditor",
                 "title": "Joy Editor: Reload the editor from the context of the current .joy file"
+            },
+            {
+                "command": "extension.openPointLessEditor",
+                "title": "PointLess Editor: Launch the PointLess editor"
             }
         ]
     },
