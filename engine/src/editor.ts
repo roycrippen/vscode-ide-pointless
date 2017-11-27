@@ -1,7 +1,7 @@
 // Joy Language Editor
 
 import * as $ from "jquery";
-import { Joy } from "./engine";
+// import { Joy } from "./engine";
 
 export class Editor {
     // Structure is represented as nodes with 'next', 'prev' and 'parent'.
@@ -9,14 +9,14 @@ export class Editor {
     // Cursor follows node.
     // Root nodes have no parent. First/last nodes have no prev/next.
 
-    public joy: Joy;
+    // public joy: Joy;
     private root: any;
     private cursor: any;
     private selection: any;
     public wordsP: { [key: string]: Dictionary }
 
     constructor() {
-        this.joy = new Joy(this);
+        // this.joy = new Joy(this);
         this.root = { type: "Nil" };
         this.cursor = this.root;
         this.selection = { from: null, to: null };
@@ -204,7 +204,7 @@ export class Editor {
     };
 
     loadSource = function (source: string) {
-        let tokens = this.joy.lex(source)
+        let tokens = lex(source)
         // this.deleteAll()
         for (let i = 0; i < tokens.length; i += 1) {
             let token = tokens[i]
@@ -352,11 +352,16 @@ function complete(token: any) {
 }
 
 function lookup(token: any) {
-    var words = editor.wordsP;
-    for (var w in words) {
-        if (words[w] == token) return true;
+    if (typeof token != 'string') {
+        return false
     }
-    return false;
+    return editor.wordsP.hasOwnProperty(token)
+
+    // var words = editor.wordsP;
+    // for (var w in words) {
+    //     if (words[w].name == token) return true;
+    // }
+    // return false;
 }
 
 // function lookup(token: any) {
@@ -401,7 +406,7 @@ function kind(token: any) {
     }
     catch (ex) {
         if (lookup(token))
-            return editor.joy.word(token).kind;
+            return editor.wordsP[token].kind;
         else
             return "unknown";
     }
@@ -610,6 +615,7 @@ function connect() {
     }
 
 }
+
 function onMessage(event: any) {
     const response = JSON.parse(event.data)
 
@@ -624,7 +630,8 @@ function onMessage(event: any) {
             $("#context").empty();
             for (var i = 0; i < response.stack.length; i++) {
                 const s = response.stack[i];
-                $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
+                // $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
+                $("#context").append("<div class='stack'/>").append(s);
             }
 
             let r = $("#result")
@@ -639,7 +646,8 @@ function onMessage(event: any) {
             $("#error").empty();
             for (var i = 0; i < response.errors.length; i++) {
                 const s = response.errors[i];
-                $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
+                // $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
+                $("#error").append("<div class='stack'/>").append(s);
             }
             break
         case "vocab":
@@ -648,12 +656,18 @@ function onMessage(event: any) {
             var defs = response.vocab
             console.debug('populating dictionary dropdown');
             for (var i = 0; i < defs.length; i++) {
-                const key: string = defs[i].trim().slice(0, defs[i].indexOf('==')).trim()
-                const value = defs[i].replace("== [", "== ").trim().slice(0, -1)
+                const def = defs[i].trim()
+                const idx = defs[i].indexOf('==')
+                const key: string = def.slice(0, idx).trim()
+                let value = defs[i].replace("== [", "== ").trim()
+                if (def.slice(idx + 3, idx + 12) == 'Primitive') {
+                    editor.wordsP[key] = { kind: "primitive", name: key }
+                } else {
+                    editor.wordsP[key] = { kind: "secondary", name: key }
+                    value = value.slice(0, -1)
+                }
                 $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
                 // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
-
-                editor.wordsP[key] = { kind: "secondary", name: key }
             }
             break
         default:
@@ -698,13 +712,55 @@ $(document).dblclick(function (e) {
     }
 })
 
-export interface CursorFn {
+interface CursorFn {
     (): string;
 }
 
-export interface Dictionary {
+interface Dictionary {
     kind: string,
     name: string
 }
 
+
+// lex the pointless source string
+function lex(source: string) {
+    function isWhitespace(c: string) {
+        return c === ' ' || c === '\n' || c === '\r' || c === '\t' || c === '\f';
+    }
+    const s1 = source
+        .replace(/\[/g, ' [ ')
+        .replace(/\]/g, ' ] ')
+        .replace(/;/g, ' ; ');
+    const s2 = `${s1} `;
+    const tokens = [];
+    let tok = '';
+    let str = false;
+    let last = '';
+    for (let i = 0; i < s2.length; i += 1) {
+        const c = s2[i];
+        if (str) {
+            tok += c;
+            if (c === '"' && last !== '\\') {
+                tokens.push(tok);
+                tok = '';
+                str = false;
+            }
+            last = c;
+        } else {
+            const emptyTok = tok.length === 0;
+            if (isWhitespace(c)) {
+                if (!emptyTok) {
+                    tokens.push(tok);
+                    tok = '';
+                }
+            } else {
+                if (emptyTok && c === '"') {
+                    str = true;
+                }
+                tok += c;
+            }
+        }
+    }
+    return tokens;
+}
 
