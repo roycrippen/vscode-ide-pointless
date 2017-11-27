@@ -5,7 +5,11 @@
     },
     "search.exclude": {
         "out": true, // set this to false to include "out" folder in search results
-        "engine/out": true
+        "editor/out": true
     },
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "cSpell.words": [
+        "concatenative",
+        "dropdown"
+    ]
 }

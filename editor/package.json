@@ -1,7 +1,7 @@
 {
-    "name": "vscode-joy-engine",
+    "name": "vscode-joy-editor",
     "displayName": "Joy Editor",
-    "description": "vscode joy engine",
+    "description": "vscode joy editor",
     "version": "0.0.9",
     "publisher": "roycrippen",
     "author": {

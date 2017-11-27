@@ -46,10 +46,18 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
 
-    let cmdOpenPointLessEditor = vscode.commands.registerCommand('extension.openPointLessEditor', () => {
-        return
+    let cmdOpenPointlessEditor = vscode.commands.registerCommand('extension.openPointlessEditor', () => {
+        return vscode.commands.executeCommand(
+            'vscode.previewHtml',
+            joyEditorUri,
+            vscode.ViewColumn.Two
+        ).then((success) => {
+            console.log(`starting joy editor`)
+        }, (reason) => {
+            vscode.window.showErrorMessage(reason);
+        });
     });
-    context.subscriptions.push(cmdOpenPointLessEditor, registration);
+    context.subscriptions.push(cmdOpenPointlessEditor, registration);
 
 
 

@@ -37,9 +37,9 @@
     ],
     "activationEvents": [
         "onCommand:extension.openJoyEditor",
-        "onCommand:extension.openPointLessEditor"
+        "onCommand:extension.openPointlessEditor"
     ],
-    "main": "./out/src/extension",
+    "main": "./out/extension",
     "contributes": {
         "commands": [
             {
@@ -51,8 +51,8 @@
                 "title": "Joy Editor: Reload the editor from the context of the current .joy file"
             },
             {
-                "command": "extension.openPointLessEditor",
-                "title": "PointLess Editor: Launch the PointLess editor"
+                "command": "extension.openPointlessEditor",
+                "title": "Pointless Editor: Launch the Pointless editor"
             }
         ]
     },

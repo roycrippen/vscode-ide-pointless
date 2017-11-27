@@ -1,4 +1,4 @@
 out
 node_modules
-engine/node_modules
-engine/src/testprovider.html
+editor/node_modules
+editor/src/testprovider.html
