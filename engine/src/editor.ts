@@ -13,12 +13,14 @@ export class Editor {
     private root: any;
     private cursor: any;
     private selection: any;
+    public wordsP: { [key: string]: Dictionary }
 
     constructor() {
         this.joy = new Joy(this);
         this.root = { type: "Nil" };
         this.cursor = this.root;
         this.selection = { from: null, to: null };
+        this.wordsP = {}
     }
 
     deleteAll = (() => {
@@ -321,14 +323,27 @@ function code(from: any, to: any) {
 
 // Input
 
+// function complete(token: any) {
+//     if (kind(token) == "unknown") {
+//         var words = editor.joy.words();
+//         for (var w in words) {
+//             var d = words[w];
+//             if (d.substr(0, token.length) == token)
+//                 return d;
+//         }
+//     }
+//     if ("true".substr(0, token.length) == token) return "true"; // Note: Not all completions are dictionary words
+//     if ("false".substr(0, token.length) == token) return "false";
+//     if (token.substr(0, 1) == '"' && (token.length == 1 || token.substr(token.length - 1, 1) != '"')) return token + '"';
+//     return token;
+// }
+
 function complete(token: any) {
-    if (kind(token) == "unknown") {
-        var words = editor.joy.words();
-        for (var w in words) {
-            var d = words[w];
-            if (d.substr(0, token.length) == token)
-                return d;
-        }
+    var words = editor.wordsP;
+    for (var w in words) {
+        var d = words[w];
+        if (d.name.substr(0, token.length) == token)
+            return d.name;
     }
     if ("true".substr(0, token.length) == token) return "true"; // Note: Not all completions are dictionary words
     if ("false".substr(0, token.length) == token) return "false";
@@ -337,12 +352,40 @@ function complete(token: any) {
 }
 
 function lookup(token: any) {
-    var words = editor.joy.words();
+    var words = editor.wordsP;
     for (var w in words) {
         if (words[w] == token) return true;
     }
     return false;
 }
+
+// function lookup(token: any) {
+//     var words = editor.joy.words();
+//     for (var w in words) {
+//         if (words[w] == token) return true;
+//     }
+//     return false;
+// }
+
+// function kind(token: any) {
+//     try {
+//         var t = typeof (eval(token));
+//         switch (t) {
+//             case "string":
+//             case "number":
+//             case "boolean":
+//                 return t;
+//             default:
+//                 throw "Unknown kind: '" + token + "'";
+//         }
+//     }
+//     catch (ex) {
+//         if (lookup(token))
+//             return editor.joy.word(token).kind;
+//         else
+//             return "unknown";
+//     }
+// }
 
 function kind(token: any) {
     try {
@@ -609,6 +652,8 @@ function onMessage(event: any) {
                 const value = defs[i].replace("== [", "== ").trim().slice(0, -1)
                 $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
                 // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
+
+                editor.wordsP[key] = { kind: "secondary", name: key }
             }
             break
         default:
@@ -655,6 +700,11 @@ $(document).dblclick(function (e) {
 
 export interface CursorFn {
     (): string;
+}
+
+export interface Dictionary {
+    kind: string,
+    name: string
 }
 
 

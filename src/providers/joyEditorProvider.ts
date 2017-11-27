@@ -112,12 +112,9 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
             return ""
         }
 
-        var filename = vscode.window.activeTextEditor.document.fileName;
+        // var filename = vscode.window.activeTextEditor.document.fileName;
 
-        // var joyFileStr = this.recursiveLibloadParseAsString('', filename)
-        // .replace(/"/g, '\\"').replace(/'/g, "\\'").replace(/;/g, "\\;");
-
-        let joyFileStrs = this.recursiveLibloadParseAsArray([], filename)
+        let joyFileStrs = '" t001 == 10 10 * ; "'          // this.recursiveLibloadParseAsArray([], filename)
 
         var pathMain = relativePath.replace('/out/src', '/src/providers/')
 
