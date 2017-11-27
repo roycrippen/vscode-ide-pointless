@@ -9,14 +9,12 @@ export class Editor {
     // Cursor follows node.
     // Root nodes have no parent. First/last nodes have no prev/next.
 
-    // public joy: Joy;
     private root: any;
     private cursor: any;
     private selection: any;
     public wordsP: { [key: string]: Dictionary }
 
     constructor() {
-        // this.joy = new Joy(this);
         this.root = { type: "Nil" };
         this.cursor = this.root;
         this.selection = { from: null, to: null };
@@ -78,7 +76,6 @@ export class Editor {
     InsertWord = function (name: string) {
         var k = kind(name);
         this.SelectNone();
-        // var f = this.cursor;
         var next = this.cursor.next;
         var word = { type: "Word", kind: k, name: name, prev: this.cursor, next: next, parent: this.cursor.parent };
         if (!next && word.parent)
@@ -91,7 +88,6 @@ export class Editor {
     InsertList = function () {
         this.SelectNone();
         var nil: { type: string, parent: any } = { type: "Nil", parent: null };
-        // var f = this.cursor;
         var next = this.cursor.next;
         var list = { type: "List", first: nil, last: nil, prev: this.cursor, next: next, parent: this.cursor.parent };
         nil.parent = list;
@@ -123,7 +119,6 @@ export class Editor {
     MovePrev = function (stepIn: boolean, stepOut: boolean, select: boolean) {
         if (select) stepIn = stepOut = false; // Not allowed while selecting
         else this.SelectNone();
-        // var f = this.cursor;
         if (stepIn && this.cursor.type == "List") {
             this.cursor = this.cursor.last;
             return true;
@@ -143,7 +138,6 @@ export class Editor {
     MoveNext = function (stepIn: boolean, stepOut: boolean, select: boolean) {
         if (select) stepIn = stepOut = false; // Not allowed while selecting
         else this.SelectNone();
-        // var f = this.cursor;
         if (this.cursor.next) {
             this.cursor = this.cursor.next;
             if (stepIn && this.cursor.type == "List")
@@ -185,7 +179,7 @@ export class Editor {
 
     DeleteNext = function (stepIn: boolean, stepOut: boolean) {
         if (this.HasSelection()) {
-            // TODO: Identical to other Delethiste*
+            // TODO: Identical to other Delete*
             var s = this.Selection(); // Normalized
             this.cursor = s.from.prev;
             this.cursor.next = s.to.next;
@@ -234,11 +228,6 @@ let editor: Editor = new Editor();
 
 let ws: any = undefined;
 
-function _escape(str: string) {
-    return str; // TODO: Breaks rendering of >, <, words and </b> turns into a comment?!
-    //return str.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
-}
-
 function render(cursorFn: CursorFn) {
     var cursor = editor.Cursor();
     var selection = editor.Selection();
@@ -274,7 +263,7 @@ function render(cursorFn: CursorFn) {
                         _render(node.first, "") + "</span>" + _selectionTo() + _cursor());
                 case "Word":
                     return _render(node.next, html + _selectionFrom() + "<span class='" +
-                        node.kind + "'>" + _escape(node.name) + "</span>" + _selectionTo() + _cursor());
+                        node.kind + "'>" + node.name + "</span>" + _selectionTo() + _cursor());
                 case "Nil":
                     return _render(node.next, html + _selectionFrom() + (node.next ? "" : "&nbsp;") +
                         _selectionTo() + _cursor());
@@ -301,7 +290,7 @@ function code(from: any, to: any) {
                     if (abort) return out;
                     break;
                 case "Word":
-                    out += _escape(node.name) + " ";
+                    out += node.name + " ";
                     break;
                 case "Nil":
                     break;
@@ -323,21 +312,6 @@ function code(from: any, to: any) {
 
 // Input
 
-// function complete(token: any) {
-//     if (kind(token) == "unknown") {
-//         var words = editor.joy.words();
-//         for (var w in words) {
-//             var d = words[w];
-//             if (d.substr(0, token.length) == token)
-//                 return d;
-//         }
-//     }
-//     if ("true".substr(0, token.length) == token) return "true"; // Note: Not all completions are dictionary words
-//     if ("false".substr(0, token.length) == token) return "false";
-//     if (token.substr(0, 1) == '"' && (token.length == 1 || token.substr(token.length - 1, 1) != '"')) return token + '"';
-//     return token;
-// }
-
 function complete(token: any) {
     var words = editor.wordsP;
     for (var w in words) {
@@ -356,41 +330,7 @@ function lookup(token: any) {
         return false
     }
     return editor.wordsP.hasOwnProperty(token)
-
-    // var words = editor.wordsP;
-    // for (var w in words) {
-    //     if (words[w].name == token) return true;
-    // }
-    // return false;
 }
-
-// function lookup(token: any) {
-//     var words = editor.joy.words();
-//     for (var w in words) {
-//         if (words[w] == token) return true;
-//     }
-//     return false;
-// }
-
-// function kind(token: any) {
-//     try {
-//         var t = typeof (eval(token));
-//         switch (t) {
-//             case "string":
-//             case "number":
-//             case "boolean":
-//                 return t;
-//             default:
-//                 throw "Unknown kind: '" + token + "'";
-//         }
-//     }
-//     catch (ex) {
-//         if (lookup(token))
-//             return editor.joy.word(token).kind;
-//         else
-//             return "unknown";
-//     }
-// }
 
 function kind(token: any) {
     try {
@@ -417,7 +357,7 @@ export function update() {
 
     render(function () {
         if (token.length > 0) {
-            return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
+            return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
         }
         else {
             return token + "<span class='cursor'>|</span>";
@@ -429,38 +369,10 @@ export function update() {
     var c = code(root, cursor);
     $("#output").empty().append(c);
 
-    // editor.joy.reset();
-    // editor.joy.execute(c);
-
     if (ws != undefined) {
         ws.send("run: " + c)
         console.debug("message to websocket server: " + "run: " + c)
     }
-
-    // const ctx = editor.joy.getStack();
-    // $("#context").empty();
-    // for (var i = 0; i < ctx.stack.length; i++) {
-    //     const s = ctx.stack[i];
-    //     $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
-    // }
-
-    // const results = editor.joy.getResultConsole();
-    // let r = $("#result")
-    // r.empty();
-    // r.append("<div class='stack'/>").append(results);
-    // r.scrollTop(r.prop("scrollHeight"));
-
-    // const display = editor.joy.getDisplayConsole();
-    // $("#display").empty();
-    // $("#display").append("<div class='stack'/>").append(display);
-
-    // const errs = editor.joy.getErrors();
-    // $("#error").empty();
-    // for (var i = 0; i < errs.length; i++) {
-    //     const s = errs[i];
-    //     $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
-    // }
-
 }
 
 $(document).keydown(function (e) {
@@ -500,12 +412,6 @@ $(document).keydown(function (e) {
                 editor.MoveNext(e.ctrlKey || false, true, e.shiftKey || false);
             }
             break;
-        // case 65: // CTRL-A - Select All
-        //     if (e.ctrlKey) {
-        //         e.preventDefault();
-        //         editor.SelectAll();
-        //     }
-        //     break;
         default:
             break;
     }
@@ -597,7 +503,7 @@ function connect() {
                 ws.onmessage = onMessage;
                 render(function () {
                     if (token.length > 0) {
-                        return "<span class='" + kind(complete(token)) + "'>" + _escape(token) + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
+                        return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
                     }
                     else {
                         return token + "<span class='cursor'>|</span>";
@@ -630,7 +536,6 @@ function onMessage(event: any) {
             $("#context").empty();
             for (var i = 0; i < response.stack.length; i++) {
                 const s = response.stack[i];
-                // $("#context").append("<div class='stack'/>").append(editor.joy.print([s]));
                 $("#context").append("<div class='stack'/>").append(s);
             }
 
@@ -639,14 +544,9 @@ function onMessage(event: any) {
             r.append("<div class='stack'/>").append(response.display);  // todo rename display to result in haskell
             r.scrollTop(r.prop("scrollHeight"));
 
-            // const display = editor.joy.getDisplayConsole();
-            // $("#display").empty();
-            // $("#display").append("<div class='stack'/>").append(display);
-
             $("#error").empty();
             for (var i = 0; i < response.errors.length; i++) {
                 const s = response.errors[i];
-                // $("#error").append("<div class='stack'/>").append(editor.joy.print([s]));
                 $("#error").append("<div class='stack'/>").append(s);
             }
             break
@@ -667,7 +567,6 @@ function onMessage(event: any) {
                     value = value.slice(0, -1)
                 }
                 $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
-                // $("#dropdown-dictionary").append($('<option>', { value: key, text: value }))
             }
             break
         default:
