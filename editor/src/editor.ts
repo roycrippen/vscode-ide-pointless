@@ -1,6 +1,7 @@
 // Joy Language Editor
 
 import * as $ from "jquery";
+import { log } from "util";
 // import { Joy } from "./engine";
 
 export class Editor {
@@ -580,6 +581,9 @@ function onMessage(event: any) {
                 }
                 $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
             }
+            break
+        case "load":
+            console.log(event.data["load"])
             break
         default:
             console.log("unknown json keys ")
