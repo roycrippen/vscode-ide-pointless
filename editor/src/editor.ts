@@ -501,14 +501,18 @@ function connect() {
             console.log(event.data)
             if (event.data == "pointless") {
                 ws.onmessage = onMessage;
-                render(function () {
-                    if (token.length > 0) {
-                        return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
-                    }
-                    else {
-                        return token + "<span class='cursor'>|</span>";
-                    }
-                });
+                let pointlessStr = (window as any).getJoyFileString()
+
+                ws.send('load: ' + pointlessStr)
+
+                // render(function () {
+                //     if (token.length > 0) {
+                //         return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
+                //     }
+                //     else {
+                //         return token + "<span class='cursor'>|</span>";
+                //     }
+                // });
             } else {
                 console.log("unknown response " + event.data);
                 ws.close();
@@ -521,6 +525,14 @@ function connect() {
     }
 
 }
+
+
+// var getJoyFileString: any;
+// function contentProviderCallback() {
+//     console.debug('executing content provider callback');
+//     //Note: getJoyFileString is a script function within the vscode content provider 
+//     return getJoyFileString();
+// }
 
 function onMessage(event: any) {
     const response = JSON.parse(event.data)

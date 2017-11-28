@@ -36,8 +36,7 @@
         "Debuggers"
     ],
     "activationEvents": [
-        "onCommand:extension.openJoyEditor",
-        "onCommand:extension.openPointlessEditor"
+        "onCommand:extension.openJoyEditor"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -49,10 +48,6 @@
             {
                 "command": "extension.reloadJoyEditor",
                 "title": "Joy Editor: Reload the editor from the context of the current .joy file"
-            },
-            {
-                "command": "extension.openPointlessEditor",
-                "title": "Pointless Editor: Launch the Pointless editor"
             }
         ]
     },
@@ -72,9 +67,11 @@
         "vscode": "^1.0.0",
         "jquery": "^3.2.1",
         "ts-loader": "^2.3.7",
-        "webpack": "^3.6.0"
+        "webpack": "^3.6.0",
+        "websocket": "1.0.25"
     },
     "dependencies": {
-        "jquery": "^3.2.1"
+        "jquery": "^3.2.1",
+        "websocket": "1.0.25"
     }
 }

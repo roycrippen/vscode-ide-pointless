@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
     const joyEditorUri = vscode.Uri.parse('joy-editor://authority/JoyEditor');
 
     if (typeof vscode.window.activeTextEditor == 'undefined') {
-        vscode.window.showErrorMessage("Active editor doesn't show a JOY script - please open one and/or relaunch the Joy Editor extension.");
+        vscode.window.showErrorMessage("Active editor doesn't show a Pointless script - please open one and/or relaunch the Pointless Editor extension.");
     }
 
     // const settings = new JoyEditorsSettings();
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
         console.log(`onDidChangeTextEditorSelection!`);
         if (e.textEditor === vscode.window.activeTextEditor && typeof provider !== 'undefined'
-            && e.textEditor.document.fileName.endsWith('joy') && provider.getProviderHtml().trim().startsWith('<body>')) {
+            && e.textEditor.document.fileName.endsWith('pointless') && provider.getProviderHtml().trim().startsWith('<body>')) {
             provider.update(joyEditorUri);
         }
     })
@@ -39,27 +39,12 @@ export function activate(context: vscode.ExtensionContext) {
             joyEditorUri,
             vscode.ViewColumn.Two
         ).then((success) => {
-            console.log(`starting joy editor`)
+            console.log(`starting pointless editor`)
         }, (reason) => {
             vscode.window.showErrorMessage(reason);
         });
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
-
-    let cmdOpenPointlessEditor = vscode.commands.registerCommand('extension.openPointlessEditor', () => {
-        return vscode.commands.executeCommand(
-            'vscode.previewHtml',
-            joyEditorUri,
-            vscode.ViewColumn.Two
-        ).then((success) => {
-            console.log(`starting joy editor`)
-        }, (reason) => {
-            vscode.window.showErrorMessage(reason);
-        });
-    });
-    context.subscriptions.push(cmdOpenPointlessEditor, registration);
-
-
 
     // let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {
     //     if (typeof provider !== 'undefined') {
@@ -71,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-    context.subscriptions.push(cmdOpenJoyEditor, registration);
+    // context.subscriptions.push(cmdOpenJoyEditor, registration);
 }
 
 export default function (context: vscode.ExtensionContext): Thenable<vscode.TextEditor> {
@@ -92,4 +77,17 @@ export default function (context: vscode.ExtensionContext): Thenable<vscode.Text
 
 export function deactivate() {
     console.log('deactivate');
+}
+
+export function connectWebsocket(port: number, source: string) {
+    let WebSocketClient = require('websocket').w3cwebsocket;
+    let ws = new WebSocketClient('ws://localhost:9160/');
+
+    ws.onopen = function () {
+        console.log("connect to websocket server");
+        ws.send("load: " + source);
+        ws.onmessage = function (event: any) {
+            console.log(event.data)
+        }
+    }
 }

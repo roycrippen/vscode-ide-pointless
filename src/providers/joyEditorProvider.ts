@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-// import { lexJoyCommands } from "../../engine/src/joy-lexer";
+
 const fs = require('fs');
 
-var _joyExtension = "joy";
+var _pointlessExtension = "pless";
 var _providerHtml = "";
 
 export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
@@ -24,7 +24,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
      * @param uri - provided file uri
      */
     public provideTextDocumentContent(uri: vscode.Uri): string {
-        return this.createJoyEditorPreview(uri);
+        return this.createPointlessEditorPreview(uri);
     }
 
     /**
@@ -48,13 +48,13 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
      * 
      * @param uri - provided file uri
      */
-    public createJoyEditorPreview(uri: vscode.Uri): string {
-        const reason = "Active editor doesn't show a JOY script - please open one and/or relaunch the Joy Editor extension.";
-        if (typeof vscode.window.activeTextEditor === 'undefined' || !vscode.window.activeTextEditor.document.fileName.endsWith(_joyExtension)) {
+    public createPointlessEditorPreview(uri: vscode.Uri): string {
+        const reason = "Active editor doesn't show a Pointless script - please open one and/or relaunch the Pointless Editor extension.";
+        if (typeof vscode.window.activeTextEditor === 'undefined' || !vscode.window.activeTextEditor.document.fileName.endsWith(_pointlessExtension)) {
             _providerHtml = this.errorPreview(reason);
             return _providerHtml
         }
-        return this.joyEditorPreview(uri);
+        return this.pointlessEditorPreview(uri);
     }
 
 
@@ -101,27 +101,44 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
     // }
 
     /**
-     * Create the Joy Editor extension as a preview tab within vscode.
+     * Read current Pointless file.
      * 
-     * @param uri - provided file uri
+     * @param array - array of joy files represented as strings
+     * @param filename - the root joy file to parse
      */
-    private joyEditorPreview(uri: vscode.Uri): string {
+    loadPointlessFile(filename: string): string {
+        console.log(`loading file: ${filename}`);
 
-        var relativePath = path.dirname(__dirname);
         if (vscode.window.activeTextEditor === undefined) {
             return ""
         }
 
-        // var filename = vscode.window.activeTextEditor.document.fileName;
+        if (fs.existsSync(filename)) {
+            let source = fs.readFileSync(filename, 'utf8')
+            return JSON.stringify(source).slice(1).slice(0, -1)
+        }
+        return ""
+    }
 
-        let joyFileStrs = '" t001 == 10 10 * ; "'          // this.recursiveLibloadParseAsArray([], filename)
+    /**
+     * Create the Joy Editor extension as a preview tab within vscode.
+     * 
+     * @param uri - provided file uri
+     */
+    private pointlessEditorPreview(uri: vscode.Uri): string {
 
-        var pathMain = relativePath.replace('/out', '/src/providers/')
+        if (vscode.window.activeTextEditor === undefined) {
+            return ""
+        }
+
+        const relativePath = path.dirname(__dirname);
+        const pathMain = relativePath.replace('/out', '/src/providers/')
+        const filename = vscode.window.activeTextEditor.document.fileName;
+        const source = this.loadPointlessFile(filename)
 
         _providerHtml = fs.readFileSync(pathMain + 'main.html', 'utf8')
             .replace(/\${relativePath}/g, relativePath)
-            .replace(/\${joyFileStrs}/g, joyFileStrs);
-
+            .replace(/\${joyFileStr}/g, source);
 
         let pathEditor = relativePath.replace('/out', '/editor/src/')
         fs.writeFile(pathEditor + 'testprovider.html', _providerHtml)
