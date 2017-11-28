@@ -44,10 +44,6 @@
             {
                 "command": "extension.openJoyEditor",
                 "title": "Joy Editor: Launch the editor"
-            },
-            {
-                "command": "extension.reloadJoyEditor",
-                "title": "Joy Editor: Reload the editor from the context of the current .joy file"
             }
         ]
     },
