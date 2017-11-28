@@ -1,7 +1,6 @@
 // Joy Language Editor
 
 import * as $ from "jquery";
-import { log } from "util";
 // import { Joy } from "./engine";
 
 export class Editor {
@@ -506,14 +505,15 @@ function connect() {
 
                 ws.send('load: ' + pointlessStr)
 
-                // render(function () {
-                //     if (token.length > 0) {
-                //         return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
-                //     }
-                //     else {
-                //         return token + "<span class='cursor'>|</span>";
-                //     }
-                // });
+                // initial render
+                render(function () {
+                    if (token.length > 0) {
+                        return "<span class='" + kind(complete(token)) + "'>" + token + "<span class='cursor'>|</span><span class='complete'>" + complete(token).substr(token.length) + "</span></span>";
+                    }
+                    else {
+                        return token + "<span class='cursor'>|</span>";
+                    }
+                });
             } else {
                 console.log("unknown response " + event.data);
                 ws.close();
@@ -527,25 +527,16 @@ function connect() {
 
 }
 
-
-// var getJoyFileString: any;
-// function contentProviderCallback() {
-//     console.debug('executing content provider callback');
-//     //Note: getJoyFileString is a script function within the vscode content provider 
-//     return getJoyFileString();
-// }
-
 function onMessage(event: any) {
     const response = JSON.parse(event.data)
 
     var keys = Object.keys(response);
-
     if (keys.length == 0) {
         console.log("error, unknown message: " + event.data)
     }
 
     switch (keys[0]) {
-        case "stack":
+        case "stack":   // result from running quotation(s)
             $("#context").empty();
             for (var i = 0; i < response.stack.length; i++) {
                 const s = response.stack[i];
@@ -563,7 +554,7 @@ function onMessage(event: any) {
                 $("#error").append("<div class='stack'/>").append(s);
             }
             break
-        case "vocab":
+        case "vocab":   // new library items
             $("#dropdown-search").empty();
             $("#dropdown-dictionary").empty();
             var defs = response.vocab
@@ -582,10 +573,10 @@ function onMessage(event: any) {
                 $("#dropdown-dictionary").append(`<a class=\"drop-element\" href=\"#${key}\"> ${value} </a>`);
             }
             break
-        case "load":
-            console.log(event.data["load"])
+        case "load":    // acknowledge of load issued to websocket server
+            console.log(response.load)
             break
-        default:
+        default:        // unknown message
             console.log("unknown json keys ")
             console.log(keys);
             break

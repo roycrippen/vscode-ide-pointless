@@ -141,7 +141,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
             .replace(/\${joyFileStr}/g, source);
 
         let pathEditor = relativePath.replace('/out', '/editor/src/')
-        fs.writeFile(pathEditor + 'testprovider.html', _providerHtml)
+        fs.writeFileSync(pathEditor + 'testprovider.html', _providerHtml)
 
         return _providerHtml;
     }
