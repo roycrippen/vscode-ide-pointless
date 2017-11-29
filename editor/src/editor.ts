@@ -545,7 +545,10 @@ function onMessage(event: any) {
 
             let r = $("#result")
             r.empty();
-            r.append("<div class='stack'/>").append(response.display);  // todo rename display to result in haskell
+            for (var i = 0; i < response.display.length; i++) {
+                const s = response.display[i];
+                r.append("<div class='stack'/>").append(s);  // todo rename display to result in haskell
+            }
             r.scrollTop(r.prop("scrollHeight"));
 
             $("#error").empty();
