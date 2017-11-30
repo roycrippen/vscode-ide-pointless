@@ -115,7 +115,9 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
 
         if (fs.existsSync(filename)) {
             let source = fs.readFileSync(filename, 'utf8')
-            return JSON.stringify(source).slice(1).slice(0, -1)
+            let _source = JSON.stringify(source).slice(1).slice(0, -1)
+            let __source = _source.replace(/'/g, "\\'")
+            return __source
         }
         return ""
     }
