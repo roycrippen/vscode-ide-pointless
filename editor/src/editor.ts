@@ -528,6 +528,10 @@ function connect() {
 }
 
 function onMessage(event: any) {
+
+    let debugStopper = "debug: "
+    console.debug(debugStopper + event.data.substr(0, 100))
+
     const response = JSON.parse(event.data)
 
     var keys = Object.keys(response);
