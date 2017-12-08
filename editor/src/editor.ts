@@ -22,8 +22,8 @@ export class Editor {
     }
 
     deleteAll = (() => {
-        this.root = { type: "Nil" };
-        this.cursor = this.root;
+        // this.root = { type: "Nil" };
+        // this.cursor = this.root;
         this.selection = { from: null, to: null };
     })
 
@@ -199,7 +199,6 @@ export class Editor {
 
     loadSource = function (source: string) {
         let tokens = lex(source)
-        // this.deleteAll()
         for (let i = 0; i < tokens.length; i += 1) {
             let token = tokens[i]
             switch (token) {
@@ -225,8 +224,8 @@ let token: string = "";
 let inQuote: boolean = false;
 let last: number = 0;
 let editor: Editor = new Editor();
-
 let ws: any = undefined;
+let previousStr = ""
 
 function render(cursorFn: CursorFn) {
     var cursor = editor.Cursor();
@@ -369,7 +368,8 @@ export function update() {
     var c = code(root, cursor);
     $("#output").empty().append(c);
 
-    if (ws != undefined) {
+    if (ws != undefined && c != previousStr) {
+        previousStr = c
         ws.send("run: " + c)
         console.debug("message to websocket server: " + "run: " + c)
     }
