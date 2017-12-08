@@ -613,6 +613,7 @@ $(document).click(function (e) {
         }
         editor.loadSource(_source)
         token = ''
+        $('#dropdown-search').val("")
     }
 })
 
