@@ -547,11 +547,13 @@ function onMessage(event: any) {
                 $("#context").append("<div class='stack'/>").append(s);
             }
 
+            // ↵	\u21B5	&#8629;	&crarr;
+
             let r = $("#result")
             r.empty();
             for (var i = 0; i < response.result.length; i++) {
-                const s = response.result[i];
-                r.append("<div class='stack'/>").append(s);
+                const s = response.result[i] == "" ? '\u21B5' : response.result[i]
+                r.append("<div class='stack'/>").append(s)
             }
             r.scrollTop(r.prop("scrollHeight"));
 
