@@ -547,8 +547,6 @@ function onMessage(event: any) {
                 $("#context").append("<div class='stack'/>").append(s);
             }
 
-            // ↵	\u21B5	&#8629;	&crarr;
-
             let r = $("#result")
             r.empty();
             for (var i = 0; i < response.result.length; i++) {
@@ -557,10 +555,10 @@ function onMessage(event: any) {
             }
             r.scrollTop(r.prop("scrollHeight"));
 
-            $("#error").empty();
-            for (var i = 0; i < response.errors.length; i++) {
-                const s = response.errors[i];
-                $("#error").append("<div class='stack'/>").append(s);
+            $("#display").empty();
+            for (var i = 0; i < response.display.length; i++) {
+                const s = response.display[i];
+                $("#display").append("<div class='stack'/>").append(s);
             }
             break
         case "vocab":   // new library items
