@@ -57,67 +57,22 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         return this.pointlessEditorPreview(uri);
     }
 
-
-    // /**
-    //  * Parse a joy file into memory. This function will return an array of joy files represented as strings.
-    //  * If the root joy file references other joy files (via the libload keyword) those files will are added
-    //  * to the array via recursion.
-    //  * 
-    //  * @param array - array of joy files represented as strings
-    //  * @param filename - the root joy file to parse
-    //  */
-    // private recursiveLibloadParseAsArray(array: string[], filename: string): string[] {
-    //     console.log(`parsing file: ${filename}`);
-
-    //     if (vscode.window.activeTextEditor === undefined) {
-    //         return []
-    //     }
-
-    //     var filePath = vscode.window.activeTextEditor.document.fileName.substring(0, filename.lastIndexOf(path.sep)) + path.sep;
-
-    //     if (fs.existsSync(filename)) {
-    //         const rawFile = fs.readFileSync(filename, 'utf8')
-    //         const strippedRawFile = lexJoyCommands(rawFile).reduce((acc, token) => {
-    //             return `${acc} ${token.value}`
-    //         }, "")
-
-    //         var strFile = JSON.stringify(strippedRawFile, null, 4);
-
-    //         array.push(strFile);
-    //         var pattern = /(?!^)"([\w+]|[.]+)+.*?"(\s+)(libload)(\s?)./g;
-    //         var newlibMatch = strFile.match(pattern);
-
-    //         if (newlibMatch !== null && typeof newlibMatch !== 'undefined') {
-    //             newlibMatch.forEach((a) => {
-    //                 var lib = a.match(/(^)".*?"/g);
-    //                 if (lib !== null && typeof lib !== 'undefined' && lib.length > 0) {
-    //                     array = this.recursiveLibloadParseAsArray(array, filePath + lib[0].trim().replace(/^"(.*)\\"$/g, '$1') + '.' + _joyExtension);
-    //                 }
-    //             });
-    //         }
-    //     }
-
-    //     return array;
-    // }
-
     /**
-     * Read current Pointless file.
+     * build load command for local pointless file
      * 
-     * @param array - array of joy files represented as strings
-     * @param filename - the root joy file to parse
+     * @param filename - the root pointless file
      */
-    loadPointlessFile(filename: string): string {
-        console.log(`loading file: ${filename}`);
+    buildLoadCommand(filename: string): string {
+        console.log(`building load command for file: ${filename}`);
 
         if (vscode.window.activeTextEditor === undefined) {
             return ""
         }
 
-        if (fs.existsSync(filename)) {
-            let source = fs.readFileSync(filename, 'utf8')
-            let _source = JSON.stringify(source).slice(1).slice(0, -1)
-            let __source = _source.replace(/'/g, "\\'")
-            return __source
+        if (fs.existsSync(filename) && filename !== undefined) {
+            let leafname = filename.replace(/^.*[\\\/]/, '').replace(".pless", "")
+            const source = "\"" + leafname + "\" libload"
+            return source
         }
         return ""
     }
@@ -136,7 +91,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         const relativePath = path.dirname(__dirname);
         const pathMain = relativePath.replace('/out', '/src/providers/')
         const filename = vscode.window.activeTextEditor.document.fileName;
-        const source = this.loadPointlessFile(filename)
+        const source = this.buildLoadCommand(filename)
 
         _providerHtml = fs.readFileSync(pathMain + 'main.html', 'utf8')
             .replace(/\${relativePath}/g, relativePath)
