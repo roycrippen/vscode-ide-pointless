@@ -70,9 +70,12 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         }
 
         if (fs.existsSync(filename) && filename !== undefined) {
-            let leafname = filename.replace(/^.*[\\\/]/, '').replace(".pless", "")
-            const source = "\"" + leafname + "\" libload"
-            return source
+            const leafname = filename.replace(/^.*[\\\/]/, '')
+            const path = filename.replace(leafname, "")
+            const leafname_ = leafname.replace(".pless", "")
+            const pathPL = " \"current-path\" [ \"" + path + "\" ] define "
+            const filePL = " \"" + leafname_ + "\" libload "
+            return (pathPL + filePL)
         }
         return ""
     }
