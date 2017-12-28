@@ -92,7 +92,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
         }
 
         const relativePath = path.dirname(__dirname);
-        const pathMain = relativePath.replace('/out', '/src/providers/')
+        const pathMain = relativePath.replace('/out', '/resources/')
         const filename = vscode.window.activeTextEditor.document.fileName;
         const source = this.buildLoadCommand(filename)
 
@@ -107,7 +107,7 @@ export class JoyEditorProvider implements vscode.TextDocumentContentProvider {
     }
 
     /**
-     * Get the HTML markup.
+     * Get the HTML markup. 
      */
     public getProviderHtml(): string {
         return _providerHtml;
