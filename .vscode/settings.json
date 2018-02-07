@@ -11,5 +11,6 @@
     "cSpell.words": [
         "concatenative",
         "dropdown"
-    ]
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

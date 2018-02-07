@@ -17,6 +17,7 @@ export class Editor {
     constructor() {
         this.root = { type: "Nil" };
         this.cursor = this.root;
+        console.log(this.cursor)
         this.selection = { from: null, to: null };
         this.wordsP = {}
     }

@@ -1,21 +1,19 @@
 # Welcome to the Joy Editor Extension for vscode
 
-# How to install and run locally
+# How to install and build extension
 * `git clone` ...clone the repo
-* `cd vscode-joy-editor` ...change directory to extension folder
+* `cd vscode-ide-pointless` ...change directory to extension folder
 * `npm install` ...install dependencies
-* `cd engine` ...change directory to joy execution engine
-* `npm install`...install dependencies
+* `cd editor` ...change directory to joy execution engine
+* `npm install` ...install dependencies
 * `./node_modules/webpack/bin/webpack.js` ...compile the joy execution engine
-* `code` or `vscode` ...open vscode
-* `File : Open Folder` ...open `vscode-joy-editor` folder from within vscode
-* `ctrl+shift+P` ...type `Run Task`, select `Tasks:Run Task`, then select `npm`
+* `cd ..` ...backup
+* ...install vsce globally https://code.visualstudio.com/docs/extensions/publish-extension
+* `vsce package` ...build extension
+* `Install from VSIX...`...install extension in vscode from extensions menu
 
-## Running extension to develop joy programs
-* press `F5` to run in extension in debug mode
-* open a .joy source file
-* press `Ctrl+Shift+P` or `Cmd+Shift+P` on Mac to toggle the command dropdown,  type `Joy Editor`, and select `Joy Editor: Launch the Editor`
 
-## References
-Interactive editor component forked from brief editor
-author: AshleyF url: https://github.com/AshleyF/brief
+Other links
+  * [Pointless Language](https://github.com/roycrippen/pointless-hs) information and engine.
+  * [Pointless Syntax Highlighting](https://github.com/roycrippen/vscode-language-pointless) vscode extension
+  * [Pointless Documentation](https://github.com/roycrippen/pointless-hs/wiki/Primitives)
