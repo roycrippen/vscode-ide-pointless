@@ -1,6 +1,6 @@
-# Welcome to the Joy Editor Extension for vscode
+# Pointless IDE Extension for vscode
 
-# How to install and build extension
+### How to install and build extension
 * `git clone` ...clone the repo
 * `cd vscode-ide-pointless` ...change directory to extension folder
 * `npm install` ...install dependencies
