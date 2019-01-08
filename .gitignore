@@ -3,4 +3,3 @@ node_modules
 editor/node_modules
 editor/src/testprovider.html
 /*.log
-/*.vsix
