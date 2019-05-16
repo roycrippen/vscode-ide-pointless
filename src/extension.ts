@@ -17,22 +17,6 @@ export function activate(context: vscode.ExtensionContext) {
     let provider = new JoyEditorProvider();
     let registration = vscode.workspace.registerTextDocumentContentProvider('joy-editor', provider);
     context.subscriptions.push(registration);
-
-    // vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-    //     console.log(`onDidChangeTextDocument!`);
-    //     // if (e.document === vscode.window.activeTextEditor.document && typeof provider !== 'undefined') {
-    //     // 	provider.update(joyEditorUri);
-    //     // }
-    // });
-
-    // vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-    //     console.log(`onDidChangeTextEditorSelection!`);
-    //     if (e.textEditor === vscode.window.activeTextEditor && typeof provider !== 'undefined'
-    //         && e.textEditor.document.fileName.endsWith('pointless') && provider.getProviderHtml().trim().startsWith('<body>')) {
-    //         provider.update(joyEditorUri);
-    //     }
-    // })
-
     let cmdOpenJoyEditor = vscode.commands.registerCommand('extension.openJoyEditor', () => {
         return vscode.commands.executeCommand(
             'vscode.previewHtml',
@@ -45,18 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
     context.subscriptions.push(cmdOpenJoyEditor, registration);
-
-    // let cmdReloadJoyEditor = vscode.commands.registerCommand('extension.reloadJoyEditor', () => {
-    //     if (typeof provider !== 'undefined') {
-    //         //TODO: implement on reload command
-    //         console.log('reload command...');
-    //         let str = provider.provideTextDocumentContent(joyEditorUri)
-    //         let _uri = vscode.Uri.parse(str)
-    //         provider.update(_uri);
-    //     }
-    // });
-    // context.subscriptions.push(cmdReloadJoyEditor, registration);
-
 }
 
 export default function (context: vscode.ExtensionContext): Thenable<vscode.TextEditor> {

@@ -1,22 +1,23 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/editor.ts',
     devtool: 'source-map',
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-        ],
+    mode: "development",
+    entry: './src/editor.ts',
+    output: {
+        filename: 'joy.bundle.js',
+        path: path.resolve(__dirname, './out'),
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
-    output: {
-        filename: 'joy.bundle.js',
-        path: path.resolve(__dirname, './out'),
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
     },
 };

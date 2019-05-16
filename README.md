@@ -1,17 +1,21 @@
 # Pointless IDE Extension for vscode
 
-### How to install and build extension
-* `git clone` ...clone the repo
-* `cd vscode-ide-pointless` ...change directory to extension folder
-* `npm install` ...install dependencies
-* `cd editor` ...change directory to joy execution engine
-* `npm install` ...install dependencies
-* `./node_modules/webpack/bin/webpack.js` ...compile the joy execution engine
-* `cd ..` ...backup
-* ...install vsce globally https://code.visualstudio.com/docs/extensions/publish-extension
-* `vsce package` ...build extension
-* `Install from VSIX...`...install extension in vscode from extensions menu
+### Clone repository
+* `git clone https://github.com/roycrippen/vscode-ide-pointless.git` ...clone the repo
 
+### Install extension
+* `Extensions icon` => in vscode select extension icon in left panel
+* `...` => select More actions...
+* `Install from VSIX...` => select Install from VSIX...
+* `vscode-joy-editor-0.0.9.vsix` => select file 
+* `install` => click install button
+
+### Build extension (requires [vsce](https://code.visualstudio.com/docs/extensions/publish-extension))
+* `bash install.sh` => run node install scripts
+* `cd editor` => change directory to joy execution engine
+* `node_modules/webpack/bin/webpack.js` => compile the joy execution engine
+* `cd ..` => backup
+* `vsce package` ...build extension
 
 Other links
   * [Pointless Language](https://github.com/roycrippen/pointless-hs) information and engine.

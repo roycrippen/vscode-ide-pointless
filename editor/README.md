@@ -3,8 +3,7 @@
 A JavaScript editor for the Pointless concatenative programming language.
 
 # How to develop locally
-* Compile and pack    :  `../node_modules/webpack/bin/webpack.js`
-* Run Joy scripts     :  vscode with the 'vscode-joy-editor' extension
+* Compile and pack    :  `node_modules/webpack/bin/webpack.js`
 
 ## References
 Interactive editor component forked from brief editor
